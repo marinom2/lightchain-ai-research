@@ -41,6 +41,7 @@ check("mistral-nemo:12b (community example)", modelId("mistral-nemo:12b"),
 console.log("\n== 2. Report registration hashes (Appendix A) ==");
 const REPORT = {
   "qwen3-vl-8b": "0x2b0139b21e5ecb742e8a8cc47e1c868cb2037b02a46f03626a0a39da30f47521",
+  "qwen3-vl-30b": "0x854d3280c43be8e8bb0e453c389d932686c0d84e720b8cfa2701eef0e682121f",
   "qwen3-vl-32b": "0xa239f923dfde3226b6acfe96f86a534691af6e3e65ac00765bfe60c22c334cc4",
   "qwen3-vl-235b": "0xf53291fd3fb08ff62c051288f0cd6c6618f0221b3dbd9225e069f4fca0bc7295",
   "qwen3-embedding-0.6b": "0xacfc413365387644b8c74a963f22d97ff6a47eff7c816ec567c2022f25bfc9ee",

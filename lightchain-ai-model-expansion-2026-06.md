@@ -32,7 +32,7 @@ We recommend ten models. They fall into three groups based on how hard they are 
 2. **Qwen3-Embedding** - the "search by meaning" engine that lets AI look things up in your documents before answering. Runs on anything.
 3. **GLM-4.7-Flash** - a strong AI software developer. Runs on a high-end gaming graphics card.
 4. **gpt-oss 20B** - a strong all-round assistant for questions and reasoning, from OpenAI. Runs on a high-end gaming card.
-5. **Qwen3-VL 32B** - a sharper document reader, near human-level at reading forms and PDFs.
+5. **Qwen3-VL 30B** (mixture-of-experts) - a sharper document reader, near human-level at reading forms and PDFs, and the fastest model we measured.
 
 **Group 2 - Ready to add today, but only the best-equipped workers can run them.** Also just a configuration change, but no ordinary worker has a big enough graphics card. We already do this with our existing large model, so the precedent exists.
 
@@ -46,6 +46,34 @@ We recommend ten models. They fall into three groups based on how hard they are 
 10. **Wan 2.2 / LTX-2.3** - generates short video clips.
 
 The recommendation: add Group 1 now, recruit better-equipped operators and add Group 2 soon after, and treat Group 3 as a deliberate build project (the order being pictures first, then music, then video, which is the hardest).
+
+---
+
+## What we measured on real GPUs
+
+We did not just estimate these numbers. We rented the actual graphics cards and ran each model through Ollama (the same engine the workers use), then shut the rented machines down. Here is what came back.
+
+| Model | Card | Memory used | Speed | Answer time (warm) | Fits the 2-minute limit |
+|---|---|---|---|---|---|
+| qwen3-embedding:0.6b | 24GB | 5.4 GB | search vectors (1024-dim) | instant | yes |
+| qwen3-vl:8b | 24GB | 9.5 GB | 115 words/sec | ~2s | yes |
+| gpt-oss:20b | 24GB | 12 GB | 124 words/sec | ~2s | yes |
+| glm-4.7-flash | 24GB | 19.3 GB | 145 words/sec | ~2s | yes |
+| qwen3-vl:30b (mixture-of-experts) | 24GB | 20.6 GB | 181 words/sec | ~1s | yes |
+| qwen3-vl:32b (dense) | 24GB | 20.3 GB | 3 words/sec | 41s | NO at real length |
+| qwen3-coder-next | 80GB | 54.8 GB | 111 words/sec | ~1.5s | yes |
+| gpt-oss:120b | 80GB | 60 GB | 116 words/sec | ~2s | yes |
+
+("words/sec" is roughly tokens/sec; "warm" means the model was already loaded, which is how a busy worker runs.)
+
+Two things the real test caught that estimates would have missed:
+
+- **qwen3-vl:8b actually needs a 12GB card, not 8GB.** It used 9.5GB once loaded, so it does not fit the 8GB minimum machine; it belongs on the 24GB tier.
+- **The dense 32B vision model is too slow on a consumer card.** qwen3-vl:32b managed only 3 words per second on a 24GB card, so a full-length answer would take roughly 20 minutes, far past the 2-minute limit. Its mixture-of-experts sibling, **qwen3-vl:30b, did the same job at 181 words per second** - about 57 times faster for the same memory - so that is the right document-reading model for the 24GB tier. The dense 32B should be reserved for an 80GB card.
+
+Everything else confirmed the plan: every recommended model fit its tier's card and answered well inside the 2-minute limit, the two premium models ran comfortably on a single 80GB card, and the embeddings model was tiny and instant. The one-time model download (a few minutes for the big ones) happens once per worker and is not part of a job's clock.
+
+Cost of all this testing: a few dollars of rented GPU time. The full numbers, the test script, and a re-runnable harness are in the research folder under `gpu-tests/`.
 
 ---
 
@@ -73,7 +101,7 @@ For each model: what it does in plain terms, why it earns its place, the catch, 
 
 **1. Qwen3-VL 8B - reads images and documents**
 
-Show it a photo, a scanned invoice, a screenshot, or a PDF, and it tells you what is there or pulls out the details you ask for. It is small enough to run on the cheapest 8GB worker, so almost any operator could offer it. The licence is fully open for commercial use. The catch is that it reads images, it does not create them, and a model this small is a capable generalist rather than a specialist. One thing to confirm before launch: today's jobs are pure text, so we need to check that the system can also accept an image alongside the prompt; if not, that is a small addition.
+Show it a photo, a scanned invoice, a screenshot, or a PDF, and it tells you what is there or pulls out the details you ask for. Measured on a real card it uses about 9.5GB once loaded, so it needs a 12GB card (not the bare 8GB minimum). The licence is fully open for commercial use. The catch is that it reads images, it does not create them, and a model this small is a capable generalist rather than a specialist. One thing to confirm before launch: today's jobs are pure text, so we need to check that the system can also accept an image alongside the prompt; if not, that is a small addition.
 Cost per job: about 0.03 LCAI. Registration name: `qwen3-vl-8b`.
 
 **2. Qwen3-Embedding - search by meaning**
@@ -91,10 +119,10 @@ Cost per job: about 0.05 LCAI. Registration name: `glm-4.7-flash`.
 Made by OpenAI and released for anyone to run, this is a high-quality general assistant: questions, explanations, summaries, step-by-step reasoning. This is the everyday "chatbot" workload that most people actually want, and having a frontier-lab model serving it on ordinary hardware is a real selling point. It runs on a 16-to-24GB card. The catch is simply that it is a generalist; it is not as good at coding as our dedicated coder, nor at reading documents as our vision models.
 Cost per job: about 0.04 LCAI. Registration name: `gpt-oss-20b`.
 
-**5. Qwen3-VL 32B - a near human-level document reader**
+**5. Qwen3-VL 30B - a near human-level document reader**
 
-The same idea as model 1, but much sharper, and currently the best open model in the world at reading documents. On a standard document-reading test (questions asked about forms, tables, and PDFs, scored out of 100), it gets about 97 right, which is essentially human-level, and it does this at less than half the size of the previous best model. This is the "talk to your Word, Excel, and PDF files" capability that businesses pay for. It runs on a 24GB card. The catch is just that: it needs the recommended-tier machine, not the minimum.
-Cost per job: about 0.08 LCAI. Registration name: `qwen3-vl-32b`.
+The same idea as model 1, but much sharper, and among the best open models in the world at reading documents (on a standard document-reading test it scores in the high 90s out of 100, essentially human-level). This is the "talk to your Word, Excel, and PDF files" capability that businesses pay for. We tested two versions of this model: the dense 32-billion one and a mixture-of-experts 30-billion one. They use the same memory (~20GB, so a 24GB card), but on a real card the mixture-of-experts version ran at 181 words per second while the dense one crawled at 3 - so we recommend the **30B mixture-of-experts** version for the 24GB tier, and would only run the dense 32B on an 80GB card. The catch is the card: it needs the recommended 24GB machine, not the minimum.
+Cost per job: about 0.08 LCAI. Registration name: `qwen3-vl-30b`.
 
 ### Group 2 - ready today, but only for well-equipped operators
 
@@ -228,7 +256,7 @@ The seven text/vision/embedding models below run on the existing Ollama runtime 
 | qwen3-embedding-0.6b | `ollama pull qwen3-embedding:0.6b` | 0xacfc413365387644b8c74a963f22d97ff6a47eff7c816ec567c2022f25bfc9ee | N/A (1024-dim vector) | 0.004 |
 | glm-4.7-flash | `ollama pull glm-4.7-flash` | 0x35f686ade96649d2bf47e024eca280619fc80458c5cdece4804fc3f1561bd542 | 8192 | 0.05 |
 | gpt-oss-20b | `ollama pull gpt-oss:20b` | 0xcc79b5cc10ab4495c25bf8110a5bf93cbeef340ae30f2b9c7826f62d769e29ed | 8192 | 0.04 |
-| qwen3-vl-32b | `ollama pull qwen3-vl:32b` | 0xa239f923dfde3226b6acfe96f86a534691af6e3e65ac00765bfe60c22c334cc4 | 4096 | 0.08 |
+| qwen3-vl-30b | `ollama pull qwen3-vl:30b` | 0x854d3280c43be8e8bb0e453c389d932686c0d84e720b8cfa2701eef0e682121f | 4096 | 0.08 |
 | qwen3-coder-next | `ollama pull qwen3-coder-next` | 0x2484d762220e965130f8e0c0bda116929bd8d4dd281de3c11cc93ac556ccc927 | 8192 | 0.12 |
 | gpt-oss-120b | `ollama pull gpt-oss:120b` | 0xe071516607535f2517c2c4240733645b5dc9d0a40428a7dbfc8d5cb730ee2f88 | 8192 | 0.15 |
 
@@ -268,6 +296,7 @@ Live whitelisted models confirmed by reading the contract: `llama3-8b` (0xf4a414
 | Registration name | What the worker downloads | modelId (registration hash) |
 |---|---|---|
 | qwen3-vl-8b | qwen3-vl:8b | 0x2b0139b21e5ecb742e8a8cc47e1c868cb2037b02a46f03626a0a39da30f47521 |
+| qwen3-vl-30b | qwen3-vl:30b | 0x854d3280c43be8e8bb0e453c389d932686c0d84e720b8cfa2701eef0e682121f |
 | qwen3-vl-32b | qwen3-vl:32b | 0xa239f923dfde3226b6acfe96f86a534691af6e3e65ac00765bfe60c22c334cc4 |
 | qwen3-vl-235b | qwen3-vl:235b | 0xf53291fd3fb08ff62c051288f0cd6c6618f0221b3dbd9225e069f4fca0bc7295 |
 | qwen3-embedding-0.6b | qwen3-embedding:0.6b | 0xacfc413365387644b8c74a963f22d97ff6a47eff7c816ec567c2022f25bfc9ee |
@@ -287,24 +316,28 @@ Live whitelisted models confirmed by reading the contract: `llama3-8b` (0xf4a414
 
 **Per-model facts for implementers.**
 
-| Model | Size on disk (compressed) | Card needed | Licence | Suggested fee (LCAI) |
-|---|---|---|---|---|
-| Qwen3-VL 8B | ~6 GB | 8 GB | Apache-2.0 | 0.03 |
-| Qwen3-Embedding 0.6B | ~0.6 GB | 8 GB / CPU | Apache-2.0 | 0.004 |
-| GLM-4.7-Flash | ~19 GB | 24 GB | MIT | 0.05 |
-| gpt-oss 20B | ~14 GB | 16-24 GB | Apache-2.0 | 0.04 |
-| Qwen3-VL 32B | ~21 GB | 24 GB | Apache-2.0 | 0.08 |
-| Qwen3-Coder-Next | ~52 GB | 80 GB | Apache-2.0 | 0.12 |
-| gpt-oss 120B | ~65 GB | 80 GB | Apache-2.0 | 0.15 |
-| Z-Image-Turbo | ~13 GB | 24 GB | Apache-2.0 | 0.15 / image |
-| ACE-Step | ~7 GB | 8 GB | Apache-2.0 | 0.10 / song |
-| Wan 2.2 (A14B) | ~28 GB | 80 GB | Apache-2.0 | 0.50 / clip |
+"Measured VRAM" is from a real run (see the measured-results section); "card needed" reflects that measurement.
+
+| Model | Disk (Q4) | Card needed | Measured VRAM | Licence | Fee (LCAI) |
+|---|---|---|---|---|---|
+| Qwen3-Embedding 0.6B | ~0.6 GB | 8 GB / CPU | 5.4 GB | Apache-2.0 | 0.004 |
+| Qwen3-VL 8B | ~6 GB | 12 GB | 9.5 GB | Apache-2.0 | 0.03 |
+| gpt-oss 20B | ~14 GB | 16-24 GB | 12 GB | Apache-2.0 | 0.04 |
+| GLM-4.7-Flash | ~19 GB | 24 GB | 19.3 GB | MIT | 0.05 |
+| Qwen3-VL 30B (MoE) | ~20 GB | 24 GB | 20.6 GB | Apache-2.0 | 0.08 |
+| Qwen3-Coder-Next | ~52 GB | 80 GB | 54.8 GB | Apache-2.0 | 0.12 |
+| gpt-oss 120B | ~65 GB | 80 GB | 60 GB | Apache-2.0 | 0.15 |
+| Z-Image-Turbo | ~13 GB | 24 GB | not yet tested | Apache-2.0 | 0.15 / image |
+| ACE-Step | ~7 GB | 8 GB | not yet tested | Apache-2.0 | 0.10 / song |
+| Wan 2.2 (A14B) | ~28 GB | 80 GB | not yet tested | Apache-2.0 | 0.50 / clip |
+
+(Dense `qwen3-vl-32b` is also valid but, measured at ~3 tok/s on a 24GB card, belongs on an 80GB card; the 30B MoE is the 24GB pick.)
 
 **Sources and checking.** Model facts (existence, downloadable version, size, licence, test scores) were verified in June 2026 against the official model libraries, the model makers' own pages and licence files, and public comparison leaderboards. Licence terms were read from the actual licence files, since several secondary write-ups described them incorrectly. The network facts (hardware spec, time limit, registration method, naming rule) were checked against the live worker configuration. The registration hashes were computed directly and confirmed against the network's existing entries.
 
 ### Test evidence (reproducible)
 
-The deterministic claims in this report are backed by an automated test, `verify-model-expansion.mjs`. Run it with `npm test` (or `node verify-model-expansion.mjs`). It checks, and at last run passed, all of the following (39 assertions, 0 failures):
+Two kinds of evidence back this report. First, the model behaviour was **measured on real rented GPUs** (see the "What we measured on real GPUs" section and the raw data in `gpu-tests/`). Second, the deterministic on-chain claims are backed by an automated test, `verify-model-expansion.mjs`. Run it with `npm test` (or `node verify-model-expansion.mjs`). It checks, and at last run passed, all of the following (40 assertions, 0 failures):
 
 1. **Hashing scheme against the live network.** `keccak256("llama3-8b")` equals the live model's registration hash `0xf4a414fa...`, and the two community examples (`llama3.1:8b`, `mistral-nemo:12b`) reproduce their published hashes. This confirms the derivation is correct.
 2. **Every registration hash in this report** was recomputed from its name and matched.

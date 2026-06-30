@@ -1,0 +1,17 @@
+{
+  "model": "gpt-oss-120b",
+  "pullTag": "gpt-oss:120b",
+  "kind": "text",
+  "pull_seconds": 611,
+  "cold_total_seconds": 18.49,
+  "cold_load_seconds": 16.98,
+  "warm_total_seconds": 1.79,
+  "output_tokens": 128,
+  "tokens_per_sec": 116.3,
+  "warm_fits_120s_budget": true,
+  "cold_fits_120s_budget": true,
+  "vram_gb": 60,
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "cloud": "COMMUNITY",
+  "tested_at": "2026-06-30T09:28:01.386Z"
+}

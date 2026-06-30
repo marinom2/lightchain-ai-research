@@ -10,11 +10,11 @@ Three things decide whether we can add a model: it has to be **downloadable** (n
 
 | Model | What it does | Why add it | The catch |
 |---|---|---|---|
-| **Qwen3-VL 8B** | Reads images, scans, and PDFs and answers questions about them | "Understand my document" on the cheapest worker | Reads pictures, doesn't make them |
+| **Qwen3-VL 8B** | Reads images, scans, and PDFs and answers questions about them | "Understand my document" on a mid-range card | Needs a 12GB card (measured); reads pictures, doesn't make them |
 | **Qwen3-Embedding** | "Search by meaning" so AI can answer from your documents instead of guessing | Tiny, instant, runs on anything; unlocks accurate document Q&A | It's the search engine, not the chatbot |
 | **GLM-4.7-Flash** | An AI that writes and fixes software code | Strong coder, most permissive licence, runs on a high-end gaming card | Needs a 24GB graphics card |
 | **gpt-oss 20B** | A strong all-round assistant (questions, reasoning), from OpenAI | Frontier-lab quality on ordinary hardware; the most-wanted everyday use | A generalist, not a specialist |
-| **Qwen3-VL 32B** | A sharper document reader, near human-level on forms and PDFs | The "talk to your Word/Excel/PDF" feature businesses pay for | Needs a 24GB card |
+| **Qwen3-VL 30B** | A sharper document reader (mixture-of-experts), near human-level on forms and PDFs | The "talk to your Word/Excel/PDF" feature; fastest model we tested (181 words/sec) | Needs a 24GB card |
 | **Qwen3-Coder-Next** | The best open AI software engineer you can run yourself | Close to the best paid coding tools; makes the network useful to developers | Needs an 80GB data-centre card |
 | **gpt-oss 120B** | OpenAI's biggest free model, the smartest general AI you can self-run | Headline: the network runs frontier-grade AI | Needs an 80GB data-centre card |
 | **Z-Image-Turbo** | Makes a picture from a text description | A whole new product; fast and free-licensed | Software only does text today, needs building |
@@ -28,7 +28,7 @@ Three things decide whether we can add a model: it has to be **downloadable** (n
 ## The three groups
 
 **Group 1 - add now, runs on workers we already have.** Just a configuration change.
-→ Qwen3-VL 8B, Qwen3-Embedding, GLM-4.7-Flash, gpt-oss 20B, Qwen3-VL 32B.
+→ Qwen3-VL 8B, Qwen3-Embedding, GLM-4.7-Flash, gpt-oss 20B, Qwen3-VL 30B.
 
 **Group 2 - add now, but needs better hardware.** Also just a configuration change, but only operators with an 80GB data-centre card can run them. We already do this with our existing large model, so the precedent exists.
 → Qwen3-Coder-Next, gpt-oss 120B.
