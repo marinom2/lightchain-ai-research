@@ -50,7 +50,7 @@ Two things the real test caught that estimates missed: **qwen3-vl:8b needs a 12G
 
 ## What was left out, and why
 
-- **The most-hyped giants (GLM-5.2, Kimi K2/K2.6/K2.7, and similar).** Their weights *are* open and downloadable, and you *can* self-host them - so "you can't download them" would be wrong. They are excluded because they are ~700B-1T-parameter models that need a **multi-GPU datacenter rig** (far beyond even the 80GB tier), **and** they are not offered as a local download to the worker software (Ollama) - only as hosted "cloud" endpoints. (By contrast, `qwen3-coder:480b` *is* a real ~290GB local Ollama download, so it stays on the list as a multi-GPU upgrade.)
+- **The most-hyped giants (GLM-5.2, Kimi K2/K2.6/K2.7, and similar).** Their weights are open and self-hostable, but they are ~700B-1T-parameter models that need a multi-GPU datacenter rig (far beyond even the 80GB tier), and they are not available as a local download to the worker software (Ollama), only as hosted "cloud" endpoints. So a worker cannot run them. `qwen3-coder:480b`, by contrast, is a genuine ~290GB local Ollama download, so it stays on the list as a multi-GPU upgrade.
 - **Top leaderboard video models (HappyHorse, Wan 2.7):** genuinely rental-only - weights not published.
 - **Llama Vision / Gemma:** licences restrict commercial or cross-border use.
 - **MusicGen:** non-commercial licence; **HunyuanVideo:** region-restricted licence. We preferred cleanly-licensed alternatives.
