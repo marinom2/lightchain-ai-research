@@ -166,7 +166,7 @@ The technical work behind Group 3, in order of difficulty.
 
 1. **A premium hardware level (for the big text models, 6 and 7).** Add a third worker category for 48-to-80GB machines to the published guide and the app, so those operators are recognised and matched to the big models. This is the least work and unlocks the most immediate value, because the models themselves are already a simple registration. The lever is operator economics: the higher fees should attract the hardware.
 
-2. **Lock model versions (needed for a few of the text models).** A couple of models do not carry a size in their name, and the worker would otherwise fetch whatever "latest" version exists, which can change over time. For the network's honesty checks to work, every worker must run the byte-for-byte identical model, so we need to pin an exact version. Small but important.
+2. **Lock model versions (good practice for a few of the text models).** A couple of models do not carry a size in their name, and the worker would otherwise fetch whatever "latest" version exists, which can change over time. Pinning an exact version keeps every worker on the same build, which matters for consistent quality. (It is not required for honesty checks, since the network does not re-run and compare outputs.) Small but worth doing.
 
 3. **Handle "search by meaning" answers (for the embeddings model, 2).** That model answers with a list of numbers rather than text, so the network needs a small addition to accept and pass along that kind of answer. It is the easiest of the new-answer-type additions and unlocks the valuable "answer from my documents" feature.
 
@@ -174,7 +174,7 @@ The technical work behind Group 3, in order of difficulty.
 
 5. **Media software, audio/video jobs, and a longer clock (for models 9 and 10).** Add a music-and-video engine and the ability to return audio and video files. Music fits the existing time limit; video does not and needs a new "long job" category with a much longer clock and different penalty rules. This is the heaviest item.
 
-6. **A way to verify creative work (needed for all of Group 3).** This is the subtle one. For text, the network checks a worker's honesty by having a second machine re-run the exact same job and confirm it gets the exact same answer. That trick does not work for pictures, music, or video, because the same prompt produces slightly different files on different machines even when nothing is wrong. So before any creative model goes live, the network needs a different way to confirm workers did real work: comparing for close similarity rather than an exact match, or using trusted hardware that vouches for itself. This is the single biggest design question for the creative capabilities and should be settled first.
+6. **Verification is NOT a special blocker (a correction).** An earlier draft assumed the network checks a worker's honesty by re-running the job and exact-matching the output, which would have been a problem for pictures, music, and video, since the same prompt produces slightly different files on different machines. We checked the live design and that assumption was wrong. Lightchain v2 uses a lean-attestor model: the worker is the trust unit, its result is committed on-chain (encrypted, with a designated disputer who can decrypt and arbitrate if a result is challenged), and there is **no automatic re-run-and-compare step** (the old re-run "Proof of Intelligence quorum" was explicitly retired). So creative models are attested like any other job, and verification is not a build blocker for them. We also confirmed this on a real GPU: even a text model is not bit-identical across two temperature-0 runs, and because nothing re-runs and compares, that does not matter. The real Group 3 blockers are only the new runtime, the new job type, and (for video alone) the 120-second budget.
 
 ---
 
@@ -183,7 +183,7 @@ The technical work behind Group 3, in order of difficulty.
 1. **Now:** add models 1, 3, 4, and 5 (document reader, coder, assistant, premium document reader). These are pure configuration changes and run on hardware the network already targets. Lock their versions where needed.
 2. **Soon:** announce the premium hardware level and add models 6 and 7 (the big coder and the big brain). Recruit operators with the better machines.
 3. **Next:** add the "search by meaning" answer type and turn on model 2 (embeddings) and its larger versions. This ships the "answer from my documents" capability that businesses want.
-4. **Then, as a build project:** pictures first (model 8), then music (model 9), then video (model 10), each only after the honesty-check question is answered.
+4. **Then, as a build project:** pictures first (model 8), then music (model 9), then video (model 10). Each needs the new runtime and a new job type; video also needs the longer job clock. Verification is not a blocker (see the correction in the build section).
 
 ---
 
@@ -232,9 +232,32 @@ The seven text/vision/embedding models below run on the existing Ollama runtime 
 | qwen3-coder-next | `ollama pull qwen3-coder-next` | 0x2484d762220e965130f8e0c0bda116929bd8d4dd281de3c11cc93ac556ccc927 | 8192 | 0.12 |
 | gpt-oss-120b | `ollama pull gpt-oss:120b` | 0xe071516607535f2517c2c4240733645b5dc9d0a40428a7dbfc8d5cb730ee2f88 | 8192 | 0.15 |
 
-**How a model is registered.** The configuration contract (`AIConfig`, at `0x24D11533C354092ed6E18b964257819cE78Ce77D`) records each model's fee via `setModelFee(modelId, fee)`. A model's `modelId` is the keccak256 hash of its exact registration name. Workers announce that they serve a model through the worker registry. The fee a user pays is read from the contract per model. Of each fee, 80% goes to the worker, 15% to the protocol, 5% to a reserve.
+**How a model is registered.** A model's fee is recorded on the **AIConfig** contract via `setModelFee(modelId, fee)`, where `modelId` is the keccak256 hash of the exact (dash) registration name. Workers declare which models they serve through **WorkerRegistry**. The per-job fee is read on-chain via `calculateJobFee(modelId)`; of each fee, 80% goes to the worker, 15% to the protocol, and 5% to a fee pool.
 
-**The naming rule (validated).** The registration name is the "dash" form (for example `gpt-oss-120b`). The worker automatically turns a trailing `-120b` into `:120b` to download the model, then makes it answer to the registered name. This is why the hashes below are computed from the dash names. For names without a size on the end (`glm-4.7-flash`, `qwen3-coder-next`), the worker downloads the default version, so those must be pinned to a fixed version for the honesty checks to work.
+**How a job is verified.** Lightchain v2 uses a lean-attestor model, not a re-run quorum: the worker produces the result, it is committed on-chain (encrypted), an attestor signs it, and a designated **disputer** can decrypt and arbitrate if a result is challenged. Nothing re-runs and exact-matches, so model determinism does not affect verification. Adding a new model therefore changes only three values: its `modelId`, its fee, and its max output tokens. No new contract code or job-path is involved.
+
+**Canonical mainnet contracts (chain 9200; verify on-chain before signing).**
+
+| Contract | Address |
+|---|---|
+| AIConfig (proxy) | 0x24D11533C354092ed6E18b964257819cE78Ce77D |
+| WorkerRegistry (genesis predeploy) | 0x0000000000000000000000000000000000001002 |
+| JobRegistry (proxy) | 0xfB15F90298e4CcD7106E76ffB5e520315cC42B0b |
+| Treasury (proxy) | 0x786eDe8C42Ca54E54c9dCECa9b30052CF4743389 |
+| FeePool (genesis predeploy) | 0x0000000000000000000000000000000000001004 |
+| LightChainGovernor (proxy) | 0xD216A0c0050EdC3a9E0449EcFDf178A1652b4b68 |
+| TimelockController | 0xc783376c8237E8f1ed17d825CE7CBB4c22e3cAE5 |
+| Dispatcher (service EOA) | 0x93953f40A472E65cD0212a2DA38dD1337854256F |
+| Worker-gateway (service EOA) | 0x46737082Ac84e64f936cDDBa28F5Cd5E71329E62 |
+| Disputer (service EOA) | 0xED60d14E586219D7c984bDf0AA720a6Bd96B5F73 |
+
+Live whitelisted models confirmed by reading the contract: `llama3-8b` (0xf4a414fa…, 0.02 LCAI, 2048 tokens) and `llama3-70b` (0x665d85c3…, 0.15 LCAI, 4096 tokens).
+
+**Who can whitelist (measured on-chain).** `setModelFee` is owner-gated. As of this writing the mainnet AIConfig `owner()` is the EOA `0x8a35e0…d616` (note: this differs from the documented deployer `0x48C6…A160`, so confirm on-chain before relying on it; ownership is pending handover to a multisig and ultimately the Timelock-controlled Governor). Adding a model is currently a single owner transaction, not yet a governance vote, but it requires that owner key.
+
+**Testnet (chain 8200).** AIConfig is `0xeCF4Ca5Ba6D97ae586993e170764a1E92231b67e`, WorkerRegistry is the same predeploy `0x…1002`, JobRegistry is `0x531b3a87c5d785441b9cf55b98169f20fd9056a7`, and `llama3-8b` is whitelisted there too (0.02 LCAI). Testnet is **not permissionless**: `setModelFee` there is owner-gated by the EOA `0x7cc4…d483` (also not yet handed to governance). So a new model can be whitelisted on testnet with a single transaction by that owner, with no DAO ceremony, which makes testnet the natural place to run a genuine end-to-end test of a new model, provided whoever holds that owner key signs the transaction. Neither owner key appears among local wallets, so this step needs the LightChain team.
+
+**The naming rule (validated).** The registration name is the "dash" form (for example `gpt-oss-120b`). The worker automatically turns a trailing `-120b` into `:120b` to download the model, then makes it answer to the registered name. This is why the hashes below are computed from the dash names. For names without a size on the end (`glm-4.7-flash`, `qwen3-coder-next`), the worker downloads the default version, so those should be pinned to a fixed version for consistency across workers.
 
 **The hardware spec (validated).** Minimum worker: 4 CPU cores, 16GB system memory, 8GB graphics card, 512GB storage, 100 Mbps. Recommended: 16 cores, 64GB memory, 24GB card, 2TB storage, 1 Gbps. Anything above 24GB is a premium tier the guide does not yet publish.
 
@@ -281,7 +304,7 @@ The seven text/vision/embedding models below run on the existing Ollama runtime 
 
 ### Test evidence (reproducible)
 
-The deterministic claims in this report are backed by an automated test, `scripts/verify-model-expansion.mjs`. Run it with `node scripts/verify-model-expansion.mjs`. It checks, and at last run passed, all of the following (39 assertions, 0 failures):
+The deterministic claims in this report are backed by an automated test, `verify-model-expansion.mjs`. Run it with `npm test` (or `node verify-model-expansion.mjs`). It checks, and at last run passed, all of the following (39 assertions, 0 failures):
 
 1. **Hashing scheme against the live network.** `keccak256("llama3-8b")` equals the live model's registration hash `0xf4a414fa...`, and the two community examples (`llama3.1:8b`, `mistral-nemo:12b`) reproduce their published hashes. This confirms the derivation is correct.
 2. **Every registration hash in this report** was recomputed from its name and matched.
