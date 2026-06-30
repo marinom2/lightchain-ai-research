@@ -1,0 +1,13 @@
+{
+  "name": "lightchain-ai-research",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Independent research on open AI models to add to the LightChain AI worker network.",
+  "type": "module",
+  "scripts": {
+    "test": "node verify-model-expansion.mjs"
+  },
+  "dependencies": {
+    "ethers": "^6.15.0"
+  }
+}
