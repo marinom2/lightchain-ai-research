@@ -1,0 +1,17 @@
+{
+  "model": "glm-4.7-flash",
+  "pullTag": "glm-4.7-flash",
+  "gpu": "NVIDIA GeForce RTX 3090",
+  "cloud": "COMMUNITY",
+  "pull_seconds": 85,
+  "load_seconds": 20.22,
+  "prompt_eval_tokens": 22,
+  "output_tokens": 256,
+  "eval_seconds": 1.8,
+  "tokens_per_sec": 142.5,
+  "total_seconds": 38.57,
+  "fits_120s_budget": true,
+  "vram_gb": 19.3,
+  "sample_output": "",
+  "tested_at": "2026-06-30T08:18:00.756Z"
+}
