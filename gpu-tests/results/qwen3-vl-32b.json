@@ -1,0 +1,17 @@
+{
+  "model": "qwen3-vl-32b",
+  "pullTag": "qwen3-vl:32b",
+  "kind": "text",
+  "pull_seconds": 84,
+  "cold_total_seconds": 66.91,
+  "cold_load_seconds": 25.5,
+  "warm_total_seconds": 40.77,
+  "output_tokens": 128,
+  "tokens_per_sec": 3.2,
+  "warm_fits_120s_budget": true,
+  "cold_fits_120s_budget": true,
+  "vram_gb": 20.3,
+  "gpu": "NVIDIA GeForce RTX 3090",
+  "cloud": "COMMUNITY",
+  "tested_at": "2026-06-30T09:07:27.902Z"
+}
