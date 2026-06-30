@@ -129,24 +129,29 @@ async function ps(id) {
     pod = await createPod();
     await waitReady(pod.id);
     const pullSec = await pull(pod.id);
-    log("warm + inference...");
-    const g = await generate(pod.id);
+    log("inference 1 (cold: includes one-time model load)...");
+    const g1 = await generate(pod.id);
+    log("inference 2 (warm: model already resident, same prompt @ temp 0)...");
+    const g2 = await generate(pod.id);
     const psInfo = await ps(pod.id);
 
     const ns = 1e9;
+    const text = (g) => ((g.response || "") + (g.thinking || "")).trim();
     const out = {
       model: NAME, pullTag: PULL,
       gpu: pod.gpu, cloud: pod.cloud,
       pull_seconds: Math.round(pullSec),
-      load_seconds: +(g.load_duration / ns).toFixed(2),
-      prompt_eval_tokens: g.prompt_eval_count,
-      output_tokens: g.eval_count,
-      eval_seconds: +(g.eval_duration / ns).toFixed(2),
-      tokens_per_sec: +(g.eval_count / (g.eval_duration / ns)).toFixed(1),
-      total_seconds: +(g.total_duration / ns).toFixed(2),
-      fits_120s_budget: (g.total_duration / ns) <= BUDGET_SEC,
+      cold_load_seconds: +(g1.load_duration / ns).toFixed(2),
+      cold_total_seconds: +(g1.total_duration / ns).toFixed(2),
+      warm_total_seconds: +(g2.total_duration / ns).toFixed(2), // real per-job latency on a warm worker
+      warm_load_seconds: +(g2.load_duration / ns).toFixed(2),
+      output_tokens: g2.eval_count,
+      tokens_per_sec: +(g2.eval_count / (g2.eval_duration / ns)).toFixed(1),
+      warm_fits_120s_budget: (g2.total_duration / ns) <= BUDGET_SEC,
+      cold_fits_120s_budget: (g1.total_duration / ns) <= BUDGET_SEC,
+      deterministic_same_worker: text(g1) === text(g2), // same output twice @ temp 0 -> exact-match verifiable
       vram_gb: psInfo ? +(psInfo.size_vram / 1073741824).toFixed(1) : null,
-      sample_output: (g.response || g.thinking || "").trim().slice(0, 600),
+      sample_output: text(g2).slice(0, 600),
       tested_at: new Date().toISOString(),
     };
     mkdirSync("gpu-tests/results", { recursive: true });
