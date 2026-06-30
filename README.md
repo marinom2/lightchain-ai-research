@@ -10,18 +10,18 @@ The full write-up is in **[lightchain-ai-model-expansion-2026-06.md](lightchain-
 
 ## The 10 recommended models
 
-| Model | What it does | Why add it | The catch |
+| Model | What it does | Why add it | Specs |
 |---|---|---|---|
-| **Qwen3-VL 8B** | Reads images, scans, and PDFs and answers questions about them | "Understand my document" on a mid-range card | Needs a 12GB card (measured); reads pictures, doesn't make them |
-| **Qwen3-Embedding** | "Search by meaning" so AI can answer from your documents instead of guessing | Tiny, instant; unlocks accurate document Q&A | It's the search engine, not the chatbot |
-| **GLM-4.7-Flash** | An AI that writes and fixes software code | Strong coder, most permissive licence (MIT) | Needs a 24GB graphics card |
-| **gpt-oss 20B** | A strong all-round assistant (questions, reasoning), from OpenAI | Frontier-lab quality on ordinary hardware | A generalist, not a specialist |
-| **Qwen3-VL 30B** (MoE) | A sharper document reader, near human-level on forms and PDFs | The "talk to your Word/Excel/PDF" feature; fastest model we measured | Needs a 24GB card |
-| **Qwen3-Coder-Next** | The best open AI software engineer you can run yourself | Close to the best paid coding tools | Needs an 80GB data-centre card |
-| **gpt-oss 120B** | OpenAI's biggest free model, the smartest general AI you can self-run | Headline: the network runs frontier-grade AI | Needs an 80GB data-centre card |
-| **Z-Image-Turbo** | Makes a picture from a text description | A whole new product; fast and free-licensed | Workers only do text today; needs building |
-| **ACE-Step** | Writes and sings a full song from lyrics, in seconds, on a cheap card | New capability on the widest hardware base | Good but not Suno-grade; needs building |
-| **Wan 2.2 / LTX-2.3** | Generates short video clips from text | Flashiest capability, best marketing | A 5s clip takes ~9 min (over the time limit); needs building |
+| **Qwen3-VL 8B** | Reads images, scans, and PDFs and answers questions about them | "Understand my document" on a mid-range card | 12GB card (measured 9.5GB); vision in, text out |
+| **Qwen3-Embedding** | "Search by meaning" so AI can answer from your documents instead of guessing | Tiny, instant; unlocks accurate document Q&A | 8GB card or CPU; outputs vectors, not chat |
+| **GLM-4.7-Flash** | An AI that writes and fixes software code | Strong coder, most permissive licence (MIT) | 24GB card |
+| **gpt-oss 20B** | A strong all-round assistant (questions, reasoning), from OpenAI | Frontier-lab quality on ordinary hardware | 16-24GB card |
+| **Qwen3-VL 30B** (MoE) | A sharper document reader, near human-level on forms and PDFs | The "talk to your Word/Excel/PDF" feature; fastest model we measured | 24GB card |
+| **Qwen3-Coder-Next** | The best open AI software engineer you can run yourself | Close to the best paid coding tools | 80GB data-centre card |
+| **gpt-oss 120B** | OpenAI's biggest free model, the smartest general AI you can self-run | Headline: the network runs frontier-grade AI | 80GB data-centre card |
+| **Z-Image-Turbo** | Makes a picture from a text description | A whole new product; fast and free-licensed | 24GB card; Group 3 build (media runtime) |
+| **ACE-Step** | Writes and sings a full song from lyrics, in seconds, on a cheap card | New capability on the widest hardware base | 8GB card; Group 3 build (media runtime) |
+| **Wan 2.2 / LTX-2.3** | Generates short video clips from text | Flashiest capability, best marketing | 24-80GB card; Group 3 build (runtime + longer job window) |
 
 *On the coder scores: on a standard test of fixing 100 real software bugs unaided, GLM-4.7-Flash fixes ~59 and Qwen3-Coder-Next ~71. An older open coder of the same size manages ~22; the best paid tools score in the 70s-80s. The network has no dedicated coder today, so this fills a real gap.*
 
@@ -33,20 +33,20 @@ The full write-up is in **[lightchain-ai-model-expansion-2026-06.md](lightchain-
 
 ## What we measured on real GPUs
 
-Each model was rented, pulled through Ollama, and run with a fixed prompt. "Warm" = model already loaded (how a busy worker runs).
+Each model was rented, pulled through Ollama, and run with a fixed prompt. **Cold** = the first job, including the one-time model load. **Warm** = model already resident (how a busy worker runs, since the keep-alive watchdog holds it in memory).
 
-| Model | Card | Peak VRAM | Speed | Warm answer | Fits the 2-minute limit |
-|---|---|---|---|---|---|
-| qwen3-embedding:0.6b | 24GB | 5.4 GB | search vectors (1024-dim) | instant | yes |
-| qwen3-vl:8b | 24GB | 9.5 GB | 115 tok/s | ~2s | yes |
-| gpt-oss:20b | 24GB | 12 GB | 124 tok/s | ~2s | yes |
-| glm-4.7-flash | 24GB | 19.3 GB | 145 tok/s | ~2s | yes |
-| qwen3-vl:30b (MoE) | 24GB | 20.6 GB | **181 tok/s** | ~1s | yes |
-| qwen3-vl:32b (dense) | 24GB | 20.3 GB | **3.2 tok/s** | 41s | **no** at real length |
-| qwen3-coder-next | 80GB | 54.8 GB | 111 tok/s | ~1.5s | yes |
-| gpt-oss:120b | 80GB | 60 GB | 116 tok/s | ~2s | yes |
+| Model | Card | Peak VRAM | Speed | Cold answer (incl. load) | Warm answer | Fits the 2-minute limit |
+|---|---|---|---|---|---|---|
+| qwen3-embedding:0.6b | 24GB | 5.4 GB | search vectors (1024-dim) | ~18s | instant | yes |
+| qwen3-vl:8b | 24GB | 9.5 GB | 115 tok/s | ~64s | ~2s | yes |
+| gpt-oss:20b | 24GB | 12 GB | 124 tok/s | ~70s | ~2s | yes |
+| glm-4.7-flash | 24GB | 19.3 GB | 145 tok/s | ~39s | ~2s | yes |
+| qwen3-vl:30b (MoE) | 24GB | 20.6 GB | **181 tok/s** | ~72s | ~1s | yes |
+| qwen3-vl:32b (dense) | 24GB | 20.3 GB | **3.2 tok/s** | ~67s | 41s | **no** at real length |
+| qwen3-coder-next | 80GB | 54.8 GB | 111 tok/s | ~15s | ~1.5s | yes |
+| gpt-oss:120b | 80GB | 60 GB | 116 tok/s | ~18s | ~2s | yes |
 
-Two things the real test caught that estimates missed: **qwen3-vl:8b needs a 12GB card** (it used 9.5GB), and the **dense 32B vision model is far too slow on a consumer card** (3 tok/s) - its mixture-of-experts sibling **qwen3-vl:30b does the same job ~57x faster** at the same memory, so that is the 24GB document-reading pick.
+Even cold, every model answers within the 2-minute limit; the cold time is mostly the one-time model load, which a worker pays once and then serves warm. Two things the real test caught that estimates missed: **qwen3-vl:8b needs a 12GB card** (it used 9.5GB), and the **dense 32B vision model is far too slow on a consumer card** (3 tok/s) - its mixture-of-experts sibling **qwen3-vl:30b does the same job ~57x faster** at the same memory, so that is the 24GB document-reading pick.
 
 ## What was left out, and why
 

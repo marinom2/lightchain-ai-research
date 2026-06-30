@@ -11,16 +11,16 @@ rows.sort((a, b) => (order.indexOf(a.model) - order.indexOf(b.model)));
 const num = (n) => (n == null ? "-" : String(n));
 const line = (r) => {
   if (r.kind === "embed")
-    return `| ${r.model} | ${r.gpu} | ${num(r.vram_gb)} GB | embed (${r.embedding_dim}-dim) | ${num(r.total_seconds)}s | ${num(r.pull_seconds)}s | ${r.fits_120s_budget ? "yes" : "NO"} |`;
-  return `| ${r.model} | ${r.gpu} | ${num(r.vram_gb)} GB | ${num(r.tokens_per_sec)} tok/s | ${num(r.warm_total_seconds)}s | ${num(r.pull_seconds)}s | ${r.warm_fits_120s_budget ? "yes" : "NO"} |`;
+    return `| ${r.model} | ${r.gpu} | ${num(r.vram_gb)} GB | embed (${r.embedding_dim}-dim) | ${num(r.total_seconds)}s | instant | ${num(r.pull_seconds)}s | ${r.fits_120s_budget ? "yes" : "NO"} |`;
+  return `| ${r.model} | ${r.gpu} | ${num(r.vram_gb)} GB | ${num(r.tokens_per_sec)} tok/s | ${num(r.cold_total_seconds)}s | ${num(r.warm_total_seconds)}s | ${num(r.pull_seconds)}s | ${r.warm_fits_120s_budget ? "yes" : "NO"} |`;
 };
 
 const md = `# Measured GPU test results
 
 Real runs on rented RunPod GPUs via Ollama (the engine Lightchain workers use). Each model was pulled, then run with a fixed prompt; "warm" = model already resident. "Fits 120s" is for the *warm* run at the tested output length; see notes for models whose real-length output would exceed the budget.
 
-| Model | GPU | Peak VRAM | Throughput | Warm latency | One-time pull | Fits 120s |
-|---|---|---|---|---|---|---|
+| Model | GPU | Peak VRAM | Throughput | Cold (incl. load) | Warm | One-time pull | Fits 120s |
+|---|---|---|---|---|---|---|---|
 ${rows.map(line).join("\n")}
 
 Notes:

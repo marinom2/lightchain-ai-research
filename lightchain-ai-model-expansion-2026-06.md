@@ -53,18 +53,18 @@ The recommendation: add Group 1 now, recruit better-equipped operators and add G
 
 We did not just estimate these numbers. We rented the actual graphics cards and ran each model through Ollama (the same engine the workers use), then shut the rented machines down. Here is what came back.
 
-| Model | Card | Memory used | Speed | Answer time (warm) | Fits the 2-minute limit |
-|---|---|---|---|---|---|
-| qwen3-embedding:0.6b | 24GB | 5.4 GB | search vectors (1024-dim) | instant | yes |
-| qwen3-vl:8b | 24GB | 9.5 GB | 115 words/sec | ~2s | yes |
-| gpt-oss:20b | 24GB | 12 GB | 124 words/sec | ~2s | yes |
-| glm-4.7-flash | 24GB | 19.3 GB | 145 words/sec | ~2s | yes |
-| qwen3-vl:30b (mixture-of-experts) | 24GB | 20.6 GB | 181 words/sec | ~1s | yes |
-| qwen3-vl:32b (dense) | 24GB | 20.3 GB | 3 words/sec | 41s | NO at real length |
-| qwen3-coder-next | 80GB | 54.8 GB | 111 words/sec | ~1.5s | yes |
-| gpt-oss:120b | 80GB | 60 GB | 116 words/sec | ~2s | yes |
+| Model | Card | Memory used | Speed | Cold answer (incl. load) | Warm answer | Fits the 2-minute limit |
+|---|---|---|---|---|---|---|
+| qwen3-embedding:0.6b | 24GB | 5.4 GB | search vectors (1024-dim) | ~18s | instant | yes |
+| qwen3-vl:8b | 24GB | 9.5 GB | 115 words/sec | ~64s | ~2s | yes |
+| gpt-oss:20b | 24GB | 12 GB | 124 words/sec | ~70s | ~2s | yes |
+| glm-4.7-flash | 24GB | 19.3 GB | 145 words/sec | ~39s | ~2s | yes |
+| qwen3-vl:30b (mixture-of-experts) | 24GB | 20.6 GB | 181 words/sec | ~72s | ~1s | yes |
+| qwen3-vl:32b (dense) | 24GB | 20.3 GB | 3 words/sec | ~67s | 41s | NO at real length |
+| qwen3-coder-next | 80GB | 54.8 GB | 111 words/sec | ~15s | ~1.5s | yes |
+| gpt-oss:120b | 80GB | 60 GB | 116 words/sec | ~18s | ~2s | yes |
 
-("words/sec" is roughly tokens/sec; "warm" means the model was already loaded, which is how a busy worker runs.)
+("words/sec" is roughly tokens/sec. "Cold" is the first job, including the one-time model load; "warm" means the model was already loaded, which is how a busy worker runs after the keep-alive watchdog holds it in memory. Even cold, every model answers inside the 2-minute limit.)
 
 Two things the real test caught that estimates would have missed:
 

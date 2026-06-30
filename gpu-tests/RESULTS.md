@@ -2,16 +2,16 @@
 
 Real runs on rented RunPod GPUs via Ollama (the engine Lightchain workers use). Each model was pulled, then run with a fixed prompt; "warm" = model already resident. "Fits 120s" is for the *warm* run at the tested output length; see notes for models whose real-length output would exceed the budget.
 
-| Model | GPU | Peak VRAM | Throughput | Warm latency | One-time pull | Fits 120s |
-|---|---|---|---|---|---|---|
-| qwen3-embedding-0.6b | NVIDIA GeForce RTX 3090 | 5.4 GB | embed (1024-dim) | 18.26s | 5s | yes |
-| qwen3-vl-8b | NVIDIA GeForce RTX 3090 | 9.5 GB | 115.2 tok/s | 1.8s | 30s | yes |
-| gpt-oss-20b | NVIDIA GeForce RTX 3090 | 12 GB | 124.2 tok/s | 2.24s | 56s | yes |
-| glm-4.7-flash | NVIDIA GeForce RTX 3090 | 19.3 GB | 144.8 tok/s | 1.97s | 81s | yes |
-| qwen3-vl-30b | NVIDIA GeForce RTX 3090 | 20.6 GB | 181 tok/s | 1.14s | 197s | yes |
-| qwen3-vl-32b | NVIDIA GeForce RTX 3090 | 20.3 GB | 3.2 tok/s | 40.77s | 84s | yes |
-| qwen3-coder-next | NVIDIA A100 80GB PCIe | 54.8 GB | 111.4 tok/s | 1.28s | 485s | yes |
-| gpt-oss-120b | NVIDIA A100 80GB PCIe | 60 GB | 116.3 tok/s | 1.79s | 611s | yes |
+| Model | GPU | Peak VRAM | Throughput | Cold (incl. load) | Warm | One-time pull | Fits 120s |
+|---|---|---|---|---|---|---|---|
+| qwen3-embedding-0.6b | NVIDIA GeForce RTX 3090 | 5.4 GB | embed (1024-dim) | 18.26s | instant | 5s | yes |
+| qwen3-vl-8b | NVIDIA GeForce RTX 3090 | 9.5 GB | 115.2 tok/s | 63.9s | 1.8s | 30s | yes |
+| gpt-oss-20b | NVIDIA GeForce RTX 3090 | 12 GB | 124.2 tok/s | 69.97s | 2.24s | 56s | yes |
+| glm-4.7-flash | NVIDIA GeForce RTX 3090 | 19.3 GB | 144.8 tok/s | 38.83s | 1.97s | 81s | yes |
+| qwen3-vl-30b | NVIDIA GeForce RTX 3090 | 20.6 GB | 181 tok/s | 72.29s | 1.14s | 197s | yes |
+| qwen3-vl-32b | NVIDIA GeForce RTX 3090 | 20.3 GB | 3.2 tok/s | 66.91s | 40.77s | 84s | yes |
+| qwen3-coder-next | NVIDIA A100 80GB PCIe | 54.8 GB | 111.4 tok/s | 15.14s | 1.28s | 485s | yes |
+| gpt-oss-120b | NVIDIA A100 80GB PCIe | 60 GB | 116.3 tok/s | 18.49s | 1.79s | 611s | yes |
 
 Notes:
 - VRAM is the resident size reported by Ollama (`/api/ps`), i.e. weights + KV/context.
