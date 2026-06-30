@@ -81,7 +81,7 @@ Cost of all this testing: a few dollars of rented GPU time. The full numbers, th
 
 Before the models, it helps to understand the machine they run on, because that is what shapes every recommendation.
 
-**Workers are people's graphics cards.** Anyone can join, stake some of the network's token, and start earning by answering AI jobs. The software they run is called Ollama; it loads an AI model and answers prompts. Crucially, Ollama handles **text**: you send words, you get words back. It does not, on its own, make pictures, music, or video. That single fact is why our first seven models are easy and our last three are a project.
+**Workers are people's graphics cards.** Anyone can join, stake some of the network's token, and start earning by answering AI jobs. The software they run is called Ollama; it loads an AI model and answers prompts. Crucially, Ollama handles **text**: you send words, you get words back. It does not, on its own, make pictures, music, or video. That single fact is why the first seven models are easy and the last three are a project.
 
 **The published hardware guide lists two kinds of worker.** A minimum machine has an 8GB graphics card; a recommended machine has a 24GB card. The guide does not list anything bigger. The network does already run one model that needs a 48GB card (the existing large model), but that is treated as a special premium case. So when a model needs more than a 24GB card, that is officially "above spec," and only operators who choose to bring heavier hardware can serve it. This is the line between Group 1 and Group 2.
 
@@ -116,7 +116,7 @@ Cost per job: about 0.05 LCAI. Registration name: `glm-4.7-flash`.
 
 **4. gpt-oss 20B - a strong all-round assistant**
 
-Made by OpenAI and released for anyone to run, this is a high-quality general assistant: questions, explanations, summaries, step-by-step reasoning. This is the everyday "chatbot" workload that most people actually want, and having a frontier-lab model serving it on ordinary hardware is a real selling point. It runs on a 16-to-24GB card. The catch is simply that it is a generalist; it is not as good at coding as our dedicated coder, nor at reading documents as our vision models.
+Made by OpenAI and released for anyone to run, this is a high-quality general assistant: questions, explanations, summaries, step-by-step reasoning. This is the everyday "chatbot" workload that most people actually want, and having a frontier-lab model serving it on ordinary hardware is a real selling point. It runs on a 16-to-24GB card. The catch is simply that it is a generalist; it is not as good at coding as the dedicated coder, nor at reading documents as the vision models.
 Cost per job: about 0.04 LCAI. Registration name: `gpt-oss-20b`.
 
 **5. Qwen3-VL 30B - a near human-level document reader**
@@ -136,7 +136,7 @@ Cost per job: about 0.12 LCAI. Registration name: `qwen3-coder-next`.
 **7. gpt-oss 120B - the smartest free general AI**
 
 OpenAI's largest open model. Running it on LightChain is a strong statement: it means the network serves frontier-grade AI, not just small models. It is the premium choice for deep, complex questions. It needs an 80GB data-centre card, the same heavy hardware the existing large model already uses, so it does not raise the network's existing ceiling.
-Cost per job: about 0.15 LCAI (the same as our current premium model). Registration name: `gpt-oss-120b`.
+Cost per job: about 0.15 LCAI (the same as the network's current premium model). Registration name: `gpt-oss-120b`.
 
 ### Group 3 - new capabilities that need building first
 
@@ -161,29 +161,29 @@ The bigger models each carry a specific price and a specific payoff. Here is the
 *What you get:* a top-tier AI software engineer serving the network, which makes LightChain genuinely useful to developers, a large paying audience. It is also predictable in how it answers, which keeps disputes between users and workers clean.
 *What it needs:* operators with an 80GB data-centre graphics card. The licence is fully open, so there is no legal barrier; the only barrier is hardware.
 *What to do:* announce a premium hardware level, lock the model to a fixed version (so every worker runs the identical thing), register it, and recruit operators with the higher fee.
-*Effort:* low for us (it is a configuration change). The real question is whether enough operators bring the hardware.
+*Effort:* low (it is a configuration change). The real question is whether enough operators bring the hardware.
 
 **gpt-oss 120B (the frontier brain).**
 *What you get:* the headline that the network runs OpenAI's biggest free model. A premium tier for the hardest questions, and a marketing story that lifts the whole network's reputation.
 *What it needs:* an 80GB card, the same hardware the existing large model already uses, so no new ceiling.
 *What to do:* same as above (premium tier, fixed version, register).
-*Effort:* low for us; again, the gate is operator supply.
+*Effort:* low (a configuration change); again, the gate is operator supply.
 
 **The giant models (for showcase).** There are even larger open models (a 480-billion and a 235-billion) that need multiple data-centre cards at once. They would put the network at the very top of the leaderboards and serve as a prestige tier. The extra requirement here is storage: these models are enormous to download (one is over a quarter of a terabyte), so premium operators would need large, fast drives. Worth doing only if there is real demand for a showcase tier.
 
 **Pictures (Z-Image-Turbo).**
 *What you get:* an entirely new product. Image generation has huge demand (creators, apps, on-chain art), it is fast enough to fit the time limit, and the model is free-licensed.
-*What it needs:* new software on the workers to run image models and to send a picture back as the answer, plus a way to check that workers did the job honestly (more on that below).
+*What it needs:* new software on the workers to run image models and to send a picture back as the answer. No special verification step is needed; like any text job, the result is attested, not re-run (see the correction below).
 *Effort:* medium. It is the closest of the three new capabilities to what the network already does, so it is the right one to build first.
 
 **Music (ACE-Step).**
 *What you get:* full songs with vocals, on the cheapest hardware, finishing inside the time limit.
-*What it needs:* the same kind of new software as pictures (a music engine and a way to return audio), plus the honesty check.
+*What it needs:* the same kind of new software as pictures (a music engine and a way to return audio).
 *Effort:* medium. Quality trails the paid tools, so set expectations accordingly. No time-limit change needed.
 
 **Video (Wan 2.2 / LTX-2.3).**
 *What you get:* the flashiest capability and the strongest marketing, and the path to being a full "any media" network.
-*What it needs:* the most of anything here. New video software, a way to return video, the honesty check, AND a change to the network's time rules, because a clip takes far longer than any job is currently allowed to. Quality also still trails Google and ByteDance.
+*What it needs:* the most of anything here. New video software, a way to return video, AND a change to the network's time rules, because a clip takes far longer than any job is currently allowed to. Quality also still trails Google and ByteDance.
 *Effort:* high. It is the only item that needs a rule change on top of new software, so it should come last.
 
 ---
@@ -198,7 +198,7 @@ The technical work behind Group 3, in order of difficulty.
 
 3. **Handle "search by meaning" answers (for the embeddings model, 2).** That model answers with a list of numbers rather than text, so the network needs a small addition to accept and pass along that kind of answer. It is the easiest of the new-answer-type additions and unlocks the valuable "answer from my documents" feature.
 
-4. **Picture software and picture jobs (for model 8).** Add the ability for a worker to run an image model and return a picture. Pictures finish inside the time limit, so no rule change is needed here, only new software and a way to check the result.
+4. **Picture software and picture jobs (for model 8).** Add the ability for a worker to run an image model and return a picture. Pictures finish inside the time limit, so no rule change is needed here, only the new software; like any other job, the result is attested rather than re-run.
 
 5. **Media software, audio/video jobs, and a longer clock (for models 9 and 10).** Add a music-and-video engine and the ability to return audio and video files. Music fits the existing time limit; video does not and needs a new "long job" category with a much longer clock and different penalty rules. This is the heaviest item.
 
