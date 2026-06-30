@@ -215,6 +215,33 @@ The technical work behind Group 3, in order of difficulty.
 
 ---
 
+## Enhancement spec: adding image, video, and song to the worker network
+
+The seven text/vision/embedding models are a configuration change. Image, video, and song are an upgrade to the network itself. This section is the concrete build plan, for whoever does that work. It is a proposed design; the team owns the exact contract and gateway internals. Note up front that none of this changes how jobs are verified - the lean attestor already covers any output - so this is purely about giving a worker a second engine and giving the protocol a way to carry a file.
+
+Three building blocks are needed. Image needs the first two; song needs the first two; video needs all three.
+
+**1. A second runtime on the worker (the engine).** Today a worker is Docker + Ollama, which only generates text. Add a media runtime that runs alongside it: for image and video, a diffusion engine (ComfyUI or a `diffusers`/PyTorch server) exposing a local HTTP API the worker calls, the same way it calls Ollama on port 11434; for song, an audio-generation server (for example an ACE-Step inference server) on its own local port. A worker opts in by installing the media container and **advertising which media job kinds it serves**, exactly as it advertises which models it serves today (extend the supported-model declaration with a job-kind tag such as `image`, `audio`, or `video`). Text-only workers are unaffected; media becomes a new, opt-in worker class on the appropriate hardware.
+
+**2. A media job type (carrying a file in and out).** A text job is `prompt -> encrypted text`. A media job is `prompt (+ parameters) -> a file`. Two changes:
+- *Request:* allow parameters beyond a prompt - image size, audio seconds, video seconds/resolution/fps - with a per-model cap (see the registry note).
+- *Response:* a binary file (PNG / MP3 / MP4), which must not go on-chain. The standard pattern: the worker **uploads the file to a content-addressed store** (the gateway's object store, or IPFS) and the result that flows through the existing encrypted session carries the **content hash plus the decryption key**, with the hash committed on-chain in the job-completed record. The current ECDH-P-256 + AES-GCM session already encrypts the worker's answer; here it encrypts the file (or just the key) and the consumer fetches and decrypts the blob. The disputer can still decrypt and arbitrate, so verification is unchanged.
+
+Registry note: a media model needs an output spec instead of `maxOutputTokens` - image: max resolution; audio: max seconds; video: max seconds + resolution + fps. Either add a small field to the AIConfig model entry or carry it in the job parameters with a per-model cap enforced off-chain. The `modelId = keccak256(name)` scheme and `setModelFee` are unchanged; media is simply priced **per output** (per image / per song / per clip), which `calculateJobFee` already supports as a flat per-model fee.
+
+**3. A long-job class (video only).** Image (seconds) and song (under ~10s) fit the current 120-second window. Video does not - a 5-second clip is roughly 9 minutes, past even the 600-second protocol ceiling. Add a long-job class for the video job kind: a much larger or open-ended compute window, a longer acknowledge-to-deadline, and a matching timeout/slashing policy. In practice this is an async flow - submit, worker acknowledges, consumer polls (or streams progress), worker returns the file when done. The gateway's session prepare/poll plumbing already exists; this extends the deadline parameters for the video job kind only.
+
+**What does not change:** verification (the lean attestor covers any output; media is attested like text, never re-run, so non-determinism is irrelevant); fees and registration (`setModelFee` / `calculateJobFee` / `keccak256(name)` work as-is); and text workers (untouched).
+
+**Build order, with a real end-to-end milestone for each:**
+1. **Image first** - lowest lift (blocks 1 and 2, fits the time limit). Milestone: a worker runs Z-Image-Turbo end-to-end on testnet - prompt in, PNG fetched and decrypted by the consumer, job settled.
+2. **Song next** - same two blocks, an audio engine, the cheapest 8GB hardware. Milestone: ACE-Step returns an MP3 end-to-end.
+3. **Video last** - adds block 3, the long-job class. Milestone: Wan 2.2 returns a clip within the new long-job window.
+
+Each milestone is a genuine end-to-end test on testnet, the same way the seven text/vision/embedding models can be tested the moment they are whitelisted.
+
+---
+
 ## What we deliberately left out, and why
 
 It is worth being clear about the famous models that did not make the list, so the choices hold up to scrutiny.

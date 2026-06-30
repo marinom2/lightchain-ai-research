@@ -29,7 +29,7 @@ The full write-up is in **[lightchain-ai-model-expansion-2026-06.md](lightchain-
 
 - **Group 1 - add now, runs on workers we already have.** Just a configuration change. → Qwen3-VL 8B, Qwen3-Embedding, GLM-4.7-Flash, gpt-oss 20B, Qwen3-VL 30B.
 - **Group 2 - add now, but needs better hardware.** Also a configuration change, but only operators with an 80GB card can serve them. The network already does this with its existing large model, so the precedent exists. → Qwen3-Coder-Next, gpt-oss 120B.
-- **Group 3 - new capabilities that need building first.** The worker software only handles text today, so pictures, music, and video each need new plumbing (and video needs the per-job time limit raised). → Z-Image-Turbo, ACE-Step, Wan 2.2 / LTX-2.3.
+- **Group 3 - new capabilities that need building first.** The worker software only handles text today, so pictures, music, and video each need new plumbing (and video needs the per-job time limit raised). → Z-Image-Turbo, ACE-Step, Wan 2.2 / LTX-2.3. The full report includes a concrete **enhancement spec** for adding this support: a second worker runtime, a media job type that returns a file, and a long-job class for video.
 
 ## What we measured on real GPUs
 
