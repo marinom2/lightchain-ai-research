@@ -9,8 +9,11 @@
  */
 import { writeFileSync, mkdirSync } from "node:fs";
 
+// Auto-load .env (Node >=22). Run from the repo root after copying .env.example to .env.
+try { process.loadEnvFile(".env"); } catch { /* no .env; fall back to process.env */ }
+
 const KEY = process.env.RUNPOD_API_KEY;
-if (!KEY) { console.error("RUNPOD_API_KEY not set"); process.exit(1); }
+if (!KEY) { console.error("RUNPOD_API_KEY not set. Copy .env.example to .env and add your RunPod API key."); process.exit(1); }
 
 const TIER = process.argv[2] || "tier";
 const DISK = parseInt(process.argv[3] || "80", 10);

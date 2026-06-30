@@ -13,8 +13,12 @@
  */
 import { writeFileSync, mkdirSync } from "node:fs";
 
+// Auto-load .env (Node >=22) so you only need to drop your key in a .env file at
+// the repo root. Run these tests from the repo root.
+try { process.loadEnvFile(".env"); } catch { /* no .env; fall back to process.env */ }
+
 const KEY = process.env.RUNPOD_API_KEY;
-if (!KEY) { console.error("RUNPOD_API_KEY not set"); process.exit(1); }
+if (!KEY) { console.error("RUNPOD_API_KEY not set. Copy .env.example to .env and add your RunPod API key."); process.exit(1); }
 
 const NAME = process.argv[2] || "glm-4.7-flash";
 const PULL = process.argv[3] || NAME;

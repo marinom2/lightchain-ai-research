@@ -12,8 +12,8 @@ LightChain AI is a network of ordinary people running AI on their own computers 
 
 To answer it properly, three things had to line up for every candidate:
 
-1. **It has to be downloadable.** Some of the most famous "open" models can only be used by renting them through a company's servers. Our workers run models on their own machines, so anything we cannot download and run ourselves is off the table, no matter how impressive it is.
-2. **It has to fit a real worker's computer.** A model takes up space on a graphics card. Our workers range from modest gaming PCs to serious data-centre machines, so for each model we have to know which workers can actually run it.
+1. **The worker software has to be able to download it.** The network's workers fetch models through Ollama, so a model is only a candidate if Ollama can pull it as a local download. A few well-known models are offered only as hosted ("cloud") endpoints, which the workers cannot run locally.
+2. **It has to fit a real worker's computer.** A model takes up space on a graphics card. The network's workers range from modest gaming PCs to serious data-centre machines, so for each model it matters which workers can actually run it. Some open models are downloadable but only run on multi-GPU datacenter rigs, which puts them beyond even the premium worker tier.
 3. **It has to finish quickly.** Every job on the network has a time limit (about two minutes today). A model that fits but takes ten minutes to answer would get its worker penalised, so speed matters as much as capability.
 
 Everything below was checked against how the network actually works (the real worker requirements, the time limit, and how models get registered), not against guesses. The result is a list of ten models, sorted by how easy they are to add.
@@ -34,7 +34,7 @@ We recommend ten models. They fall into three groups based on how hard they are 
 4. **gpt-oss 20B** - a strong all-round assistant for questions and reasoning, from OpenAI. Runs on a high-end gaming card.
 5. **Qwen3-VL 30B** (mixture-of-experts) - a sharper document reader, near human-level at reading forms and PDFs, and the fastest model we measured.
 
-**Group 2 - Ready to add today, but only the best-equipped workers can run them.** Also just a configuration change, but no ordinary worker has a big enough graphics card. We already do this with our existing large model, so the precedent exists.
+**Group 2 - Ready to add today, but only the best-equipped workers can run them.** Also just a configuration change, but no ordinary worker has a big enough graphics card. The network already does this with its existing large model, so the precedent exists.
 
 6. **Qwen3-Coder-Next** - the best open AI software engineer you can run yourself.
 7. **gpt-oss 120B** - OpenAI's biggest free model, the smartest general AI you can run without renting it.
@@ -83,7 +83,7 @@ Before the models, it helps to understand the machine they run on, because that 
 
 **Workers are people's graphics cards.** Anyone can join, stake some of the network's token, and start earning by answering AI jobs. The software they run is called Ollama; it loads an AI model and answers prompts. Crucially, Ollama handles **text**: you send words, you get words back. It does not, on its own, make pictures, music, or video. That single fact is why our first seven models are easy and our last three are a project.
 
-**The published hardware guide lists two kinds of worker.** A minimum machine has an 8GB graphics card; a recommended machine has a 24GB card. The guide does not list anything bigger. The network does already run one model that needs a 48GB card (our existing large model), but that is treated as a special premium case. So when a model needs more than a 24GB card, that is officially "above spec," and only operators who choose to bring heavier hardware can serve it. This is the line between Group 1 and Group 2.
+**The published hardware guide lists two kinds of worker.** A minimum machine has an 8GB graphics card; a recommended machine has a 24GB card. The guide does not list anything bigger. The network does already run one model that needs a 48GB card (the existing large model), but that is treated as a special premium case. So when a model needs more than a 24GB card, that is officially "above spec," and only operators who choose to bring heavier hardware can serve it. This is the line between Group 1 and Group 2.
 
 **Every job has a two-minute clock.** From the moment a worker accepts a job, it has about 120 seconds to finish, or it loses money. For text and document models this is no problem; they answer in seconds. For making a short video, it is fatal: the best open video models take roughly nine minutes for a five-second clip, which not only breaks the two-minute limit but exceeds the maximum the network can be set to (ten minutes). Music and pictures, by contrast, finish in seconds and fit comfortably.
 
@@ -126,7 +126,7 @@ Cost per job: about 0.08 LCAI. Registration name: `qwen3-vl-30b`.
 
 ### Group 2 - ready today, but only for well-equipped operators
 
-These two are also just a configuration change to add. The difference is hardware: no ordinary worker has a big enough graphics card, so they only run on operators who choose to bring data-centre hardware. We already do exactly this with our existing large model, so this is a known pattern, not a new risk. The work here is less about code and more about attracting operators with the right machines, which the higher per-job fee is meant to do.
+These two are also just a configuration change to add. The difference is hardware: no ordinary worker has a big enough graphics card, so they only run on operators who choose to bring data-centre hardware. The network already does exactly this with its existing large model, so this is a known pattern, not a new risk. The work here is less about code and more about attracting operators with the right machines, which the higher per-job fee is meant to do.
 
 **6. Qwen3-Coder-Next - the best open AI software engineer**
 
@@ -135,7 +135,7 @@ Cost per job: about 0.12 LCAI. Registration name: `qwen3-coder-next`.
 
 **7. gpt-oss 120B - the smartest free general AI**
 
-OpenAI's largest open model. Running it on LightChain is a strong statement: it means the network serves frontier-grade AI, not just small models. It is the premium choice for deep, complex questions. It needs an 80GB data-centre card, the same heavy hardware our existing large model already uses, so it does not raise the ceiling we already have.
+OpenAI's largest open model. Running it on LightChain is a strong statement: it means the network serves frontier-grade AI, not just small models. It is the premium choice for deep, complex questions. It needs an 80GB data-centre card, the same heavy hardware the existing large model already uses, so it does not raise the network's existing ceiling.
 Cost per job: about 0.15 LCAI (the same as our current premium model). Registration name: `gpt-oss-120b`.
 
 ### Group 3 - new capabilities that need building first
@@ -165,7 +165,7 @@ The bigger models each carry a specific price and a specific payoff. Here is the
 
 **gpt-oss 120B (the frontier brain).**
 *What you get:* the headline that the network runs OpenAI's biggest free model. A premium tier for the hardest questions, and a marketing story that lifts the whole network's reputation.
-*What it needs:* an 80GB card, the same hardware our existing large model already uses, so no new ceiling.
+*What it needs:* an 80GB card, the same hardware the existing large model already uses, so no new ceiling.
 *What to do:* same as above (premium tier, fixed version, register).
 *Effort:* low for us; again, the gate is operator supply.
 
@@ -174,7 +174,7 @@ The bigger models each carry a specific price and a specific payoff. Here is the
 **Pictures (Z-Image-Turbo).**
 *What you get:* an entirely new product. Image generation has huge demand (creators, apps, on-chain art), it is fast enough to fit the time limit, and the model is free-licensed.
 *What it needs:* new software on the workers to run image models and to send a picture back as the answer, plus a way to check that workers did the job honestly (more on that below).
-*Effort:* medium. It is the closest of the three new capabilities to what we already do, so it is the right one to build first.
+*Effort:* medium. It is the closest of the three new capabilities to what the network already does, so it is the right one to build first.
 
 **Music (ACE-Step).**
 *What you get:* full songs with vocals, on the cheapest hardware, finishing inside the time limit.
@@ -219,7 +219,7 @@ The technical work behind Group 3, in order of difficulty.
 
 It is worth being clear about the famous models that did not make the list, so the choices hold up to scrutiny.
 
-- **The most-hyped giants (GLM-5.2, Kimi, and similar).** These are the names everyone mentions, but they can only be rented through a company's servers; the weights are not downloadable. Our workers cannot run them, full stop.
+- **The most-hyped giants (GLM-5.2, Kimi K2/K2.6/K2.7, and similar).** To be precise, because this is easy to get wrong: their weights *are* open and downloadable, and you *can* self-host them. The reason they are not candidates for this network is twofold. First, they are roughly 700-billion to 1-trillion-parameter models that need a **multi-GPU datacenter rig** (hundreds of gigabytes even when compressed), far beyond any worker, including the 80GB premium tier. Second, they are **not offered as a local download to the worker software (Ollama)** - only as hosted "cloud" endpoints - so a worker could not fetch and run them locally even if it had the hardware. So the blocker is "not consumer/worker-grade, and not a local pull," not "you can't download it." (By contrast, `qwen3-coder:480b` *is* a real local Ollama download at ~290GB, which is why it stays on the list as a multi-GPU upgrade rather than a reject.)
 - **The top video models on the leaderboards (HappyHorse, Wan 2.7).** Same problem: impressive scores, but rental-only. Not something a worker can host.
 - **Meta's and Google's image/vision models (Llama Vision, Gemma).** Their licences restrict commercial use in ways that do not fit an open, global, decentralised network (for example, blocking operators in Europe). We chose the freely-licensed Qwen models instead.
 - **The popular open music model from Meta (MusicGen).** Its licence forbids commercial use, so we cannot sell access to it. Ruled out.
