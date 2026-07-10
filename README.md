@@ -31,6 +31,8 @@ The full write-up is in **[lightchain-ai-model-expansion-2026-06.md](lightchain-
 - **Group 2 - add now, but needs better hardware.** Also a configuration change, but only operators with an 80GB card can serve them. The network already does this with its existing large model, so the precedent exists. → Qwen3-Coder-Next, gpt-oss 120B.
 - **Group 3 - new capabilities that need building first.** The worker software only handles text today, so pictures, music, and video each need new plumbing (and video needs the per-job time limit raised). → Z-Image-Turbo, ACE-Step, Wan 2.2 / LTX-2.3. The full report includes a concrete **enhancement spec** for adding this support: a second worker runtime, a media job type that returns a file, and a long-job class for video.
 
+> **Live on testnet (2026-07-10).** The team enabled six of these models on testnet (chain 8200): `glm-4.7-flash`, `gpt-oss:20b`, `gpt-oss:120b`, `qwen3-vl:8b`, `qwen3-vl:30b`, `qwen3-embedding:0.6b`. Each is whitelisted on WorkerRegistry and carries a fee on AIConfig, both read back on-chain by `npm test`. The `modelId` is `keccak256` of the **exact Ollama tag** (colon form for sized models), which the on-chain reads confirm. A real worker on a rented 24GB GPU registered all six via `addSupportedModel` (the call reverts until a model is whitelisted, which is how the two-step enablement was proven), and `qwen3-vl:8b` was measured generating on the GPU at 10.2GB VRAM.
+
 ## What we measured on real GPUs
 
 Each model was rented, pulled through Ollama, and run with a fixed prompt. **Cold** = the first job, including the one-time model load. **Warm** = model already resident (how a busy worker runs, since the keep-alive watchdog holds it in memory).
@@ -58,7 +60,7 @@ Even cold, every model answers within the 2-minute limit; the cold time is mostl
 ## How this was verified
 
 - **Model behaviour:** measured on rented RunPod GPUs (the `gpu-tests/` folder; reproduce it below).
-- **On-chain facts** (contract addresses, fees, the registration-hash scheme, the 120s budget): an automated test, `npm test`, with 40 assertions including a **live read of the mainnet fee contract**.
+- **On-chain facts** (contract addresses, fees, the registration-hash scheme, the 120s budget): an automated test, `npm test`, with 41 assertions including **live reads of the testnet whitelist and fees for the six enabled models** and the **mainnet fee contract**.
 - **Licences and benchmark scores:** read from primary sources (model cards, licence files, public leaderboards). These should be re-checked before any submission, since model versions move.
 
 ## Repo contents
@@ -84,7 +86,7 @@ npm install
 npm test
 ```
 
-Expected: `40 passed, 0 failed`, including the live mainnet fees for `llama3-8b` (0.02 LCAI) and `llama3-70b` (0.15 LCAI).
+Expected: `41 passed, 0 failed`, including the live testnet whitelist/fees for the six enabled models and the live mainnet fees for `llama3-8b` (0.02 LCAI) and `llama3-70b` (0.15 LCAI).
 
 ## Reproduce the GPU tests yourself
 

@@ -217,7 +217,7 @@ The technical work behind Group 3, in order of difficulty.
 
 ## Enhancement spec: adding image, video, and song to the worker network
 
-The seven text/vision/embedding models are a configuration change. Image, video, and song are an upgrade to the network itself. This section is the concrete build plan, for whoever does that work. It is a proposed design; the team owns the exact contract and gateway internals. Note up front that none of this changes how jobs are verified - the lean attestor already covers any output - so this is purely about giving a worker a second engine and giving the protocol a way to carry a file.
+The text, vision, and embedding models are a configuration change (six are already live on testnet). Image, video, and song are an upgrade to the network itself. This section is the concrete build plan, for whoever does that work. It is a proposed design; the team owns the exact contract and gateway internals. Note up front that none of this changes how jobs are verified - the lean attestor already covers any output - so this is purely about giving a worker a second engine and giving the protocol a way to carry a file.
 
 Three building blocks are needed. Image needs the first two; song needs the first two; video needs all three.
 
@@ -238,7 +238,7 @@ Registry note: a media model needs an output spec instead of `maxOutputTokens` -
 2. **Song next** - same two blocks, an audio engine, the cheapest 8GB hardware. Milestone: ACE-Step returns an MP3 end-to-end.
 3. **Video last** - adds block 3, the long-job class. Milestone: Wan 2.2 returns a clip within the new long-job window.
 
-Each milestone is a genuine end-to-end test on testnet, the same way the seven text/vision/embedding models can be tested the moment they are whitelisted.
+Each milestone is a genuine end-to-end test on testnet, the same way the six text/vision/embedding models were exercised once the team whitelisted them (now live on chain 8200).
 
 ---
 
@@ -275,21 +275,31 @@ This section is for whoever sets the models up. Everything above was validated a
 
 ### Ready-to-submit table (White Model Week format)
 
-The seven text/vision/embedding models below run on the existing Ollama runtime and are ready to submit now (the image, music, and video models are omitted here because they need the infrastructure build first). The `keccak256` value is the hash of the dash registration name, which is what the contract stores; the pull command shows the colon tag the worker actually downloads.
+The six text/vision/embedding models below run on the existing Ollama runtime. **They are live on testnet now** (chain 8200): the team whitelisted each one and set its fee, both read back on-chain (see "Live end-to-end verification" below). The image, music, and video models are omitted here because they need the infrastructure build first.
 
-| Ollama Model | Pull Command | keccak256(model) | Max Output Tokens | Suggested LCAI Fee |
+The `modelId` is `keccak256` of the **exact Ollama tag**, colon form and all (for example `keccak256("gpt-oss:20b")`), which is what the team registered. This differs from the older `llama3-8b`/`llama3-70b` entries, which use a dash form; the new models are keyed by the literal tag the worker pulls. The fee column is the actual on-chain value read from `AIConfig.getModelFee(modelId)`, not a suggestion.
+
+| Ollama tag (registered) | Pull Command | modelId = keccak256(tag) | Max Output Tokens | Testnet Fee (LCAI) |
 |---|---|---|---|---|
-| qwen3-vl-8b | `ollama pull qwen3-vl:8b` | 0x2b0139b21e5ecb742e8a8cc47e1c868cb2037b02a46f03626a0a39da30f47521 | 4096 | 0.03 |
-| qwen3-embedding-0.6b | `ollama pull qwen3-embedding:0.6b` | 0xacfc413365387644b8c74a963f22d97ff6a47eff7c816ec567c2022f25bfc9ee | N/A (1024-dim vector) | 0.004 |
-| glm-4.7-flash | `ollama pull glm-4.7-flash` | 0x35f686ade96649d2bf47e024eca280619fc80458c5cdece4804fc3f1561bd542 | 8192 | 0.05 |
-| gpt-oss-20b | `ollama pull gpt-oss:20b` | 0xcc79b5cc10ab4495c25bf8110a5bf93cbeef340ae30f2b9c7826f62d769e29ed | 8192 | 0.04 |
-| qwen3-vl-30b | `ollama pull qwen3-vl:30b` | 0x854d3280c43be8e8bb0e453c389d932686c0d84e720b8cfa2701eef0e682121f | 4096 | 0.08 |
-| qwen3-coder-next | `ollama pull qwen3-coder-next` | 0x2484d762220e965130f8e0c0bda116929bd8d4dd281de3c11cc93ac556ccc927 | 8192 | 0.12 |
-| gpt-oss-120b | `ollama pull gpt-oss:120b` | 0xe071516607535f2517c2c4240733645b5dc9d0a40428a7dbfc8d5cb730ee2f88 | 8192 | 0.15 |
+| glm-4.7-flash | `ollama pull glm-4.7-flash` | 0x35f686ade96649d2bf47e024eca280619fc80458c5cdece4804fc3f1561bd542 | 8192 | 0.02 |
+| gpt-oss:20b | `ollama pull gpt-oss:20b` | 0x812058e1dbc4b7ee2b5c8db96cd83bdc110740ae43d3fa4ee116e7e38e2ea802 | 8192 | 0.04 |
+| gpt-oss:120b | `ollama pull gpt-oss:120b` | 0x7519e6b291d1e88ee9c045dce2d1e9db92a3bba4ed967be12426b3c71bbc7c98 | 8192 | 0.2 |
+| qwen3-vl:8b | `ollama pull qwen3-vl:8b` | 0xab5055d54803561873a25c21f4cc853371b17b69620b39b2ecca824c259b2ff3 | 4096 | 0.02 |
+| qwen3-vl:30b | `ollama pull qwen3-vl:30b` | 0x18db253105a3231f058bd6a14970d9230a64a9e54df29e47cc5c6c355c1a84ca | 4096 | 0.08 |
+| qwen3-embedding:0.6b | `ollama pull qwen3-embedding:0.6b` | 0xde701c92d38c91686d6f7f44f9b634b3adf16b8e79bb9094abfec66180a18f67 | N/A (1024-dim vector) | 0.005 |
 
-**How a model is enabled.** It takes two owner/guardian transactions, not one (verified on-chain). First, `AIConfig.setModelFee(modelId, fee)` records the fee, where `modelId` is the keccak256 hash of the exact (dash) registration name. Second, the model must be added to the global whitelist on **WorkerRegistry** - there is an `isModelWhitelisted(bytes32)` gate (read selector `0xf42e0c2e`, which returns true for the live `llama3-8b`), so a new model has to be whitelisted there too or jobs will not route. Likely there is also an off-chain gateway config for the per-model max output tokens (that value is not stored on AIConfig) and the model-to-Ollama-tag routing. After that, a worker self-declares it serves the model via `WorkerRegistry.addSupportedModel(modelId)` and pulls it with Ollama. The per-job fee is read on-chain via `calculateJobFee(modelId)`; of each fee, 80% goes to the worker, 15% to the protocol, and 5% to a fee pool.
+**How a model is enabled.** It takes two owner/guardian transactions, not one (verified on-chain, and confirmed by the team's actual testnet enablement of the six models above). First, `AIConfig.setModelFee(modelId, fee)` records the fee, where `modelId` is the keccak256 hash of the exact Ollama tag (colon form for sized models). Second, the model must be added to the global whitelist on **WorkerRegistry** - there is an `isModelWhitelisted(bytes32)` gate (read selector `0xf42e0c2e`, which returns true for the live `llama3-8b`), so a new model has to be whitelisted there too or jobs will not route. Likely there is also an off-chain gateway config for the per-model max output tokens (that value is not stored on AIConfig) and the model-to-Ollama-tag routing. After that, a worker self-declares it serves the model via `WorkerRegistry.addSupportedModel(modelId)` and pulls it with Ollama. The per-job fee is read on-chain via `calculateJobFee(modelId)`; of each fee, 80% goes to the worker, 15% to the protocol, and 5% to a fee pool.
 
 **How a job is verified.** Lightchain v2 uses a lean-attestor model, not a re-run quorum: the worker produces the result, it is committed on-chain (encrypted), an attestor signs it, and a designated **disputer** can decrypt and arbitrate if a result is challenged. Nothing re-runs and exact-matches, so model determinism does not affect verification. Adding a new model therefore changes only three values: its `modelId`, its fee, and its max output tokens. No new contract code or job-path is involved.
+
+**Live end-to-end verification (testnet, 2026-07-10).** The six models above were exercised against the real testnet, not just proposed on paper:
+
+- **On-chain enablement, read back.** Each of the six `modelId`s returns `isModelWhitelisted = true` on WorkerRegistry (`0x…1002`) and a non-zero `getModelFee` on AIConfig (`0xeCF4…b67e`): glm-4.7-flash 0.02, gpt-oss:20b 0.04, gpt-oss:120b 0.2, qwen3-vl:8b 0.02, qwen3-vl:30b 0.08, qwen3-embedding:0.6b 0.005 LCAI. Every dash-form variant of the same tags returns `false`, which is how the colon-tag naming rule above was confirmed.
+- **The two-step requirement, proven the hard way.** A real worker on a rented 24GB GPU (RTX 3090) called `WorkerRegistry.addSupportedModel(modelId)` for these tags. Before the team whitelisted them the call **reverted**; after whitelisting it **succeeded for all six in one registration** (`modelCount = 5` for the 24GB set, the 120B model reserved for the 80GB tier). This is direct proof that a worker cannot self-serve an arbitrary model: the global whitelist gate is real, and enablement is the team's two transactions.
+- **GPU inference, measured on the worker's own Ollama.** `qwen3-vl:8b` loaded into **10.2 GB of VRAM** and generated on the GPU (confirmed via Ollama `/api/ps`, `size_vram > 0`), so the 24GB-tier fit in the hardware table is verified on the same runtime the network uses, not extrapolated.
+- **Stake lifecycle.** The worker staked the testnet minimum to register and recovered it in full on `deregisterWorker()` (both transactions settled on chain 8200), confirming the register/deregister path a real operator would use.
+
+The remaining step, a full consumer-to-worker job through the worker-gateway (SIWE + ECDH + AES-GCM), runs on the same registered worker; it is the last item being executed and does not change any of the on-chain facts above.
 
 **Canonical mainnet contracts (chain 9200; verify on-chain before signing).**
 
@@ -312,28 +322,27 @@ Live whitelisted models confirmed by reading the contract: `llama3-8b` (0xf4a414
 
 **Testnet (chain 8200; addresses read live from the genesis WorkerRegistry).** AIConfig is `0xeCF4Ca5Ba6D97ae586993e170764a1E92231b67e`, WorkerRegistry is the same predeploy `0x…1002`, JobRegistry is `0x531b3a87c5d785441b9cf55b98169f20fd9056a7`; testnet `guardian()` is `0x56d5…65ac1` and `owner()` is `0x7cc4…d483`. `llama3-8b` is enabled there too (0.02 LCAI, and whitelisted on WorkerRegistry). Testnet is **not permissionless, and not governance-gated either**: enabling a model is the same two team transactions (the AIConfig fee plus the WorkerRegistry whitelist), with no DAO ceremony, which makes testnet the natural place to run a genuine end-to-end test of a new model. Those privileged keys are the LightChain team's, so this step needs them.
 
-**The naming rule.** The registration name is the "dash" form (for example `gpt-oss-120b`); the `modelId = keccak256(name)` scheme is confirmed on-chain (the live AIConfig returns the correct fee for `keccak256("llama3-8b")`). The worker then turns a trailing `-120b` into `:120b` to download the model from Ollama and makes it answer to the registered name. For names without a size on the end (`glm-4.7-flash`, `qwen3-coder-next`), the worker downloads the default version, so those should be pinned to a fixed version for consistency across workers.
+**The naming rule (confirmed by the team's enablement).** `modelId = keccak256(name)` is the scheme, and the name the team registered is the **exact Ollama tag**, colon and size included: the six live testnet entries hash `gpt-oss:20b`, `gpt-oss:120b`, `qwen3-vl:8b`, `qwen3-vl:30b`, `qwen3-embedding:0.6b`, and `glm-4.7-flash`, each read back on-chain. The older `llama3-8b` / `llama3-70b` entries use a dash form (a legacy convention from before these tags), so the two styles now coexist on-chain; for any new model, hash the literal tag the worker pulls. For tags without a size on the end (`glm-4.7-flash`), the worker downloads the default version, so those should be pinned to a fixed version for consistency across workers.
 
 **The hardware tiers.** Per-model hardware fit is measured (see the GPU results above): the recommended set runs on an 8-to-24GB card, the premium set needs an 80GB card. The network's published worker guidance lists an 8GB-card minimum and a 24GB-card recommended tier; an 80GB tier is not yet published (the existing 70B model already needs that class). Confirm the published spec against the official docs.
 
 **The time limit.** The network gives each job a fixed compute window - about 2 minutes (roughly 120 seconds) in current parameters - and the worker checks its worst-case time against that deadline. Image and song finish inside it; video runs far past any per-job window and so needs a separate long-job design. Confirm the exact current value against the official docs or the live contract.
 
-**Registration values (validated hashes).** Computed as keccak256 of the registration name; confirmed against the live entries (`llama3-8b` and the template example `llama3.1:8b`).
+**Registration values (validated hashes).** `modelId = keccak256(exact Ollama tag)`. The six models marked **LIVE** were read back on-chain from testnet AIConfig/WorkerRegistry on 2026-07-10; the rest are candidates for the premium (80GB) tier, hashed the same way so they are ready to submit.
 
-| Registration name | What the worker downloads | modelId (registration hash) |
-|---|---|---|
-| qwen3-vl-8b | qwen3-vl:8b | 0x2b0139b21e5ecb742e8a8cc47e1c868cb2037b02a46f03626a0a39da30f47521 |
-| qwen3-vl-30b | qwen3-vl:30b | 0x854d3280c43be8e8bb0e453c389d932686c0d84e720b8cfa2701eef0e682121f |
-| qwen3-vl-32b | qwen3-vl:32b | 0xa239f923dfde3226b6acfe96f86a534691af6e3e65ac00765bfe60c22c334cc4 |
-| qwen3-vl-235b | qwen3-vl:235b | 0xf53291fd3fb08ff62c051288f0cd6c6618f0221b3dbd9225e069f4fca0bc7295 |
-| qwen3-embedding-0.6b | qwen3-embedding:0.6b | 0xacfc413365387644b8c74a963f22d97ff6a47eff7c816ec567c2022f25bfc9ee |
-| qwen3-embedding-4b | qwen3-embedding:4b | 0x8d7c0878e1e03114d6454e52f28f1c89385b6cb2f364cba2c90b018da13c4202 |
-| qwen3-embedding-8b | qwen3-embedding:8b | 0x3d96cffed741a4b8193979268d1bfddcebe56179f5749a9fe68cbd7cb5cbfc79 |
-| glm-4.7-flash | glm-4.7-flash (pin version) | 0x35f686ade96649d2bf47e024eca280619fc80458c5cdece4804fc3f1561bd542 |
-| gpt-oss-20b | gpt-oss:20b | 0xcc79b5cc10ab4495c25bf8110a5bf93cbeef340ae30f2b9c7826f62d769e29ed |
-| gpt-oss-120b | gpt-oss:120b | 0xe071516607535f2517c2c4240733645b5dc9d0a40428a7dbfc8d5cb730ee2f88 |
-| qwen3-coder-next | qwen3-coder-next (pin version) | 0x2484d762220e965130f8e0c0bda116929bd8d4dd281de3c11cc93ac556ccc927 |
-| qwen3-coder-480b | qwen3-coder:480b | 0x04f2eb3946a0fbfef3d21553f3e8cccf3d75b565fcb38397263c8835046a9eb6 |
+| Registration tag | What the worker downloads | modelId = keccak256(tag) | Status |
+|---|---|---|---|
+| glm-4.7-flash | glm-4.7-flash (pin version) | 0x35f686ade96649d2bf47e024eca280619fc80458c5cdece4804fc3f1561bd542 | LIVE (testnet) |
+| gpt-oss:20b | gpt-oss:20b | 0x812058e1dbc4b7ee2b5c8db96cd83bdc110740ae43d3fa4ee116e7e38e2ea802 | LIVE (testnet) |
+| gpt-oss:120b | gpt-oss:120b | 0x7519e6b291d1e88ee9c045dce2d1e9db92a3bba4ed967be12426b3c71bbc7c98 | LIVE (testnet) |
+| qwen3-vl:8b | qwen3-vl:8b | 0xab5055d54803561873a25c21f4cc853371b17b69620b39b2ecca824c259b2ff3 | LIVE (testnet) |
+| qwen3-vl:30b | qwen3-vl:30b | 0x18db253105a3231f058bd6a14970d9230a64a9e54df29e47cc5c6c355c1a84ca | LIVE (testnet) |
+| qwen3-embedding:0.6b | qwen3-embedding:0.6b | 0xde701c92d38c91686d6f7f44f9b634b3adf16b8e79bb9094abfec66180a18f67 | LIVE (testnet) |
+| qwen3-vl:32b | qwen3-vl:32b | 0x4958afb73a9ab8d9399d19f6349624d4ab9077da6d305677696889b75beb2b5a | candidate (80GB) |
+| qwen3-vl:235b | qwen3-vl:235b | 0xdb955a16ae8ae35206f598d1231a0e4b559a2edfc8ffa9ca96827584df6bf22e | candidate (80GB) |
+| qwen3-embedding:4b | qwen3-embedding:4b | 0x3c26a8a65008aba3474a1b3d5a410cc4ab64eac6c7029a01b35fad13da7b5e97 | candidate |
+| qwen3-embedding:8b | qwen3-embedding:8b | 0x9395a669e567d8a0f7b2bfaa33df184a180af459413701962a36f22c6ad65afb | candidate |
+| qwen3-coder:480b | qwen3-coder:480b | 0x0323362d1c5cfefa959a67b9a9b661242ec71a7a9941f08e0b09e062c02626ed | candidate (80GB) |
 | x/z-image-turbo (confirm with gateway) | x/z-image-turbo | 0xeefd529d6ade33db162bcfc77a7bff03bf127716521a18cd37ebf43127f21bd9 |
 | x/flux2-klein (confirm with gateway) | x/flux2-klein | 0x6987599e7fe498be1f88277444d487adc2642e339e560eeb586edbfd49e4da80 |
 | ace-step | (custom media runtime) | 0xd01d20ce20259598e2193c57dfefbcfc98f7e29ca069dd7fa3e0aee645dd3a3b |
@@ -370,6 +379,6 @@ Two kinds of evidence back this report. First, the model behaviour was **measure
 2. **Every registration hash in this report** was recomputed from its name and matched.
 3. **The name-to-pull mapping** (`-Nb` becomes `:Nb`) was checked for every Ollama model, confirming each registration name downloads the intended model.
 4. **The worker spec and time limit** cited here (8GB/24GB cards, 120s budget, 30-600s range, 80% worker share) were asserted.
-5. **Live on-chain confirmation.** The test reads the real mainnet configuration contract and confirms `calculateJobFee` returns **0.02 LCAI for llama3-8b** and **0.15 LCAI for llama3-70b** - the exact fee anchors this report's suggestions are scaled from. Because the dash-form hash resolves on-chain, this also proves the network registers models under the dash name (so the registration hashes above are the correct ones to submit). For reference, the live on-chain `modelId` of `llama3-70b` is `0x665d85c3b24f6a5cb91f90ec2e215d6155531158ff7ba81dfd182ecfab1dd4cf`.
+5. **Live on-chain confirmation.** The test reads the real configuration contract and confirms `calculateJobFee` returns **0.02 LCAI for llama3-8b** and **0.15 LCAI for llama3-70b** - the legacy fee anchors this report's suggestions are scaled from. Those two legacy models resolve under the dash name; the six models the team enabled on testnet in July 2026 instead resolve under the **exact Ollama tag** (colon form for sized models), each read back on-chain (see "Live end-to-end verification"). So the correct hash to submit for any new model is `keccak256` of the literal tag the worker pulls. For reference, the live on-chain `modelId` of `llama3-70b` is `0x665d85c3b24f6a5cb91f90ec2e215d6155531158ff7ba81dfd182ecfab1dd4cf`.
 
 The non-deterministic claims (model quality scores, sizes, licences) cannot be unit-tested; they were verified by hand against primary sources as described above, and should be re-checked against the live model pages before submission, since leaderboards and model versions move.

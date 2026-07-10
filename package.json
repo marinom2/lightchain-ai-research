@@ -8,6 +8,6 @@
     "test": "node verify-model-expansion.mjs"
   },
   "dependencies": {
-    "ethers": "^6.15.0"
+    "ethers": "^6.17.0"
   }
 }
