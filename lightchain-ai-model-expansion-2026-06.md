@@ -297,9 +297,17 @@ The `modelId` is `keccak256` of the **exact Ollama tag**, colon form and all (fo
 - **On-chain enablement, read back.** Each of the six `modelId`s returns `isModelWhitelisted = true` on WorkerRegistry (`0x…1002`) and a non-zero `getModelFee` on AIConfig (`0xeCF4…b67e`): glm-4.7-flash 0.02, gpt-oss:20b 0.04, gpt-oss:120b 0.2, qwen3-vl:8b 0.02, qwen3-vl:30b 0.08, qwen3-embedding:0.6b 0.005 LCAI. Every dash-form variant of the same tags returns `false`, which is how the colon-tag naming rule above was confirmed.
 - **The two-step requirement, proven the hard way.** A real worker on a rented 24GB GPU (RTX 3090) called `WorkerRegistry.addSupportedModel(modelId)` for these tags. Before the team whitelisted them the call **reverted**; after whitelisting it **succeeded for all six in one registration** (`modelCount = 5` for the 24GB set, the 120B model reserved for the 80GB tier). This is direct proof that a worker cannot self-serve an arbitrary model: the global whitelist gate is real, and enablement is the team's two transactions.
 - **GPU inference, measured on the worker's own Ollama.** `qwen3-vl:8b` loaded into **10.2 GB of VRAM** and generated on the GPU (confirmed via Ollama `/api/ps`, `size_vram > 0`), so the 24GB-tier fit in the hardware table is verified on the same runtime the network uses, not extrapolated.
-- **Stake lifecycle.** The worker staked the testnet minimum to register and recovered it in full on `deregisterWorker()` (both transactions settled on chain 8200), confirming the register/deregister path a real operator would use.
+- **Stake lifecycle.** The worker staked the testnet minimum (5000 LCAI, read from `AIConfig.getMinWorkerStake`) to register and recovered it in full on `deregisterWorker()`, confirming the register/deregister path a real operator would use.
+- **Full consumer job round-trip, all four generative models.** With the worker daemon authenticated to the worker-gateway (SIWE) and its websocket connected, a separate funded consumer wallet submitted a real job to each model through the gateway (ECDH-P-256 + AES-GCM). All four returned a correct, decrypted answer end-to-end:
 
-The remaining step, a full consumer-to-worker job through the worker-gateway (SIWE + ECDH + AES-GCM), runs on the same registered worker; it is the last item being executed and does not change any of the on-chain facts above.
+| Model | Decrypted answer | Cold-path latency | On-chain submitJob |
+|---|---|---|---|
+| glm-4.7-flash | "Hello, I am GLM, an AI assistant." | 132.8s | 0xe0e79e20… (status 1) |
+| gpt-oss:20b | "Hello! I'm ChatGPT." | 113.3s | 0xdf8bf621… (status 1) |
+| qwen3-vl:8b | "Hello, I'm Qwen3." | 80.8s | 0x9d8957b1… (status 1) |
+| qwen3-vl:30b | "Hello! I'm Qwen." | 83.8s | 0x261d5d78… (status 1) |
+
+  Each job produced a real on-chain `createSession` and `submitJob` (all status 1), and the consumer's balance fell by **exactly 0.16 LCAI**, the precise sum of the four models' on-chain fees (0.02 + 0.04 + 0.02 + 0.08), so `calculateJobFee` charged the correct per-model price for each. The latencies are the cold path: the first job per model pays a one-time model load into the 24GB card plus the SIWE/session setup, so a warm worker serves far faster (see the GPU results table). The answer is delivered over the session-key-encrypted websocket; the on-chain `JobCompleted` commit settles just after, consistent with the lean-attestor design (no re-run). This is the complete path a real user exercises, proven on the six live models' runtime.
 
 **Canonical mainnet contracts (chain 9200; verify on-chain before signing).**
 
