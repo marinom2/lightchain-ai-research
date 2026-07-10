@@ -1,0 +1,82 @@
+{
+  "model": "qwen3-vl:8b",
+  "gpu": "NVIDIA GeForce RTX 3090",
+  "specs": {
+    "vram_load_gb": 5.4,
+    "vram_bigctx_gb": 6.09,
+    "disk_gb": 5.4,
+    "cold_load_s": 8.7,
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "qwen3vl",
+      "families": [
+        "qwen3vl"
+      ],
+      "parameter_size": "8.8B",
+      "quantization_level": "Q4_K_M"
+    }
+  },
+  "type": "vision",
+  "tests": [
+    {
+      "id": "ocr",
+      "pass": true,
+      "facts_hit": 5,
+      "facts_total": 5,
+      "expected": {
+        "invoice_number": "A-7391",
+        "date": "2026-07-10",
+        "quantity": "3",
+        "unit_price": "128.50",
+        "total_due": "385.50"
+      },
+      "seconds": 9.1,
+      "tps": 112.1,
+      "output_excerpt": "Invoice number: #A-7391  \nDate: 2026-07-10  \nItem quantity: 3  \nUnit price: $128.50  \nTotal due: $385.50"
+    },
+    {
+      "id": "chart",
+      "pass": true,
+      "facts_hit": 3,
+      "facts_total": 3,
+      "expected": {
+        "highest_day": "Wed",
+        "highest_value": "63",
+        "tuesday_value": "17"
+      },
+      "seconds": 2.7,
+      "tps": 112.3,
+      "output_excerpt": "The day with the highest value is Wednesday, the highest value is 63, and the value for Tuesday is 17."
+    },
+    {
+      "id": "shapes",
+      "pass": true,
+      "facts_hit": 2,
+      "facts_total": 2,
+      "expected": {
+        "red_circles": "4",
+        "total_shapes": "14"
+      },
+      "seconds": 8.8,
+      "tps": 110.1,
+      "output_excerpt": "To determine the number of **RED CIRCLES** and the **TOTAL NUMBER OF SHAPES**, we analyze the image:  \n\n### Step 1: Count RED CIRCLES  \n- Identify all red circular shapes.  \n- There are **4 red circles** (positions: top-left, middle-left, top-middle-right, and right-top).    \n\n### Step 2: Count TOTAL SHAPES  \n- **Circles**: 4 red + 3 blue = **7 circles**.  \n- **Squares**: 5 red + 2 green = **7 squ"
+    },
+    {
+      "id": "table",
+      "pass": true,
+      "facts_hit": 2,
+      "facts_total": 2,
+      "expected": {
+        "beta_price": "14.50",
+        "alpha_stock": "12"
+      },
+      "seconds": 2.7,
+      "tps": 111.4,
+      "output_excerpt": "The price of Beta is 14.50, and the number of units of Alpha in stock is 12."
+    }
+  ],
+  "score": 12,
+  "max": 12,
+  "tested_at": "2026-07-10T14:08:54.026Z"
+}

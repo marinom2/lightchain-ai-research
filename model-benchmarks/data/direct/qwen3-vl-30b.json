@@ -1,0 +1,82 @@
+{
+  "model": "qwen3-vl:30b",
+  "gpu": "NVIDIA GeForce RTX 3090",
+  "specs": {
+    "vram_load_gb": 17.93,
+    "vram_bigctx_gb": 18.31,
+    "disk_gb": 17.9,
+    "cold_load_s": 10.2,
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "qwen3vlmoe",
+      "families": [
+        "qwen3vlmoe"
+      ],
+      "parameter_size": "31.1B",
+      "quantization_level": "Q4_K_M"
+    }
+  },
+  "type": "vision",
+  "tests": [
+    {
+      "id": "ocr",
+      "pass": true,
+      "facts_hit": 5,
+      "facts_total": 5,
+      "expected": {
+        "invoice_number": "A-7391",
+        "date": "2026-07-10",
+        "quantity": "3",
+        "unit_price": "128.50",
+        "total_due": "385.50"
+      },
+      "seconds": 12.4,
+      "tps": 150.7,
+      "output_excerpt": "Invoice number: #A-7391  \nDate: 2026-07-10  \nItem quantity: x3  \nUnit price: $128.50  \nTotal due: $385.50"
+    },
+    {
+      "id": "chart",
+      "pass": true,
+      "facts_hit": 3,
+      "facts_total": 3,
+      "expected": {
+        "highest_day": "Wed",
+        "highest_value": "63",
+        "tuesday_value": "17"
+      },
+      "seconds": 3,
+      "tps": 151.1,
+      "output_excerpt": "To determine the answers, we analyze the bar chart:  \n\n- **Highest value day**: Identify the tallest bar. The bar for Wednesday (Wed) has a value of 63, which is higher than all other days’ values.  \n- **Highest value**: The value above the Wednesday bar is 63.  \n- **Tuesday’s value**: The bar for Tuesday (Tue) shows a value of 17.  \n\n\nWednesday has the highest value, which is 63, and Tuesday's va"
+    },
+    {
+      "id": "shapes",
+      "pass": true,
+      "facts_hit": 2,
+      "facts_total": 2,
+      "expected": {
+        "red_circles": "4",
+        "total_shapes": "14"
+      },
+      "seconds": 6.3,
+      "tps": 151.8,
+      "output_excerpt": "To determine the number of **RED CIRCLES** and the **TOTAL NUMBER OF SHAPES**, we analyze the image step by step:\n\n---\n\n### Step 1: Count Red Circles\n- In the top row, there are **4 red circles** (the first four shapes from the left).\n- There are no other red circles in the middle or bottom rows.\n  \n✅ **Red Circles = 4**\n\n---\n\n### Step 2: Count Total Shapes\nWe count all shapes (circles and squares"
+    },
+    {
+      "id": "table",
+      "pass": true,
+      "facts_hit": 2,
+      "facts_total": 2,
+      "expected": {
+        "beta_price": "14.50",
+        "alpha_stock": "12"
+      },
+      "seconds": 2.9,
+      "tps": 152.3,
+      "output_excerpt": "To determine the price of Beta and the stock units of Alpha, we analyze the table:  \n\n- For **Beta**: Locate the \"Price\" column in the row for \"Beta\". The value there is 14.50.  \n- For **Alpha**: Locate the \"Stock\" column in the row for \"Alpha\". The value there is 12.    \n\nThus, the price of Beta is 14.50 and the stock units of Alpha are 12."
+    }
+  ],
+  "score": 12,
+  "max": 12,
+  "tested_at": "2026-07-10T14:09:40.703Z"
+}

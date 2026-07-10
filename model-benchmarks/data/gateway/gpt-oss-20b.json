@@ -1,0 +1,65 @@
+{
+  "model": "gpt-oss:20b",
+  "type": "reasoning",
+  "tests": [
+    {
+      "id": "word_problem",
+      "pass": true,
+      "seconds": 68.3,
+      "detail": "expected 120 got 120",
+      "answer_excerpt": "First, the store had **240** apples.\n\n1. **Morning sale:**  \n   One third of 240 is \\( \\frac{1}{3}\\times240 = 80\\).  \n   Apples left after morning: \\(240-80=160\\).\n\n2. **Afternoon sale:**  \n   Twenty‑five percent (25%) of the remaining 160 apples is \\(0.25\\times160 = 40\\).  \n   Apples left after afternoon: \\(160-40=120\\).\n\nSo, after both sales, the store has **120** apples left.\n\nFINAL: 120",
+      "submitJob": "0xe44577b895387727c02e3b409f18076162fd11fd10f2da4098126e5a8b576a12",
+      "createSession": "0xb2aaa05cb27fbfc92c10aa736e4757b83e83c23cf22a2ccdc3f25f018080015f",
+      "jobCompleted": null,
+      "jobId": "1175",
+      "submitJob_status": 1,
+      "block": 1148154,
+      "completion": "0x02d78ed01bc277ab311faf9f6d063cdfaed0766a97adf9d167ecb544fbf1aa50"
+    },
+    {
+      "id": "logic_pets",
+      "pass": true,
+      "seconds": 53.4,
+      "detail": "expected carol got carol**",
+      "answer_excerpt": "Carol owns the cat.  \n**FINAL: Carol**",
+      "submitJob": "0x29dbd3cffbdb074fd340fd4b96d7512dfac5b85e523b476dbfab0533f39e44d2",
+      "createSession": "0x719053de295fb502a098fb5f7c48c491f76a93a9e0147c5769c8646c926bb5cd",
+      "jobCompleted": "0xce0fd565f36f515e53f500fb1afc490e4cda2488050fa4b4384d26f25e9272b2",
+      "jobId": "1176",
+      "submitJob_status": 1,
+      "block": 1148166,
+      "completion": "0xce0fd565f36f515e53f500fb1afc490e4cda2488050fa4b4384d26f25e9272b2"
+    },
+    {
+      "id": "combinatorics",
+      "pass": true,
+      "seconds": 63.6,
+      "detail": "expected 328 got 328",
+      "answer_excerpt": "To count the three‑digit even numbers with all distinct digits, consider the units digit first.\n\n**Case 1 – Units digit \\(U = 0\\)**  \n- Hundreds digit \\(H\\) can be any of \\(1–9\\): \\(9\\) choices.  \n- Tens digit \\(T\\) must differ from both \\(H\\) and \\(0\\): \\(10 - 2 = 8\\) choices.  \n\nNumber in this case: \\(9 \\times 8 = 72\\).\n\n**Case 2 – Units digit \\(U\\) is a non‑zero even number (\\(2,4,6,8\\))**  \n- There are \\(4\\) possible values for \\(U\\).  \n- Hundreds digit \\(H\\) can be any of the remaining digits \\(1–9\\) except \\(U\\): \\(8\\) choices.  \n- Tens digit \\(T\\) must differ from both \\(H\\) and \\(U\\): ",
+      "submitJob": "0x6e4bbc69798ca298997af8cffc9a5f5c75bbf9ff4b4438842cc3559a8e856756",
+      "createSession": "0x9957b281f06442ef1563a47134dd14ef48c71b9cffeb43e5f51bd7eb258393b1",
+      "jobCompleted": null,
+      "jobId": "1177",
+      "submitJob_status": 1,
+      "block": 1148175,
+      "completion": "0x4da3cb277b6126dcc651271b6b6e00f2bd902a01ca24cab148355f75c18a0405"
+    },
+    {
+      "id": "multistep_rate",
+      "pass": true,
+      "seconds": 49.9,
+      "detail": "expected 40 got 40",
+      "answer_excerpt": "FINAL: 40",
+      "submitJob": "0x9f82a7ffeb294eccf8efb533efd9c11e9410cedc7137757e5ad106b3216ad519",
+      "createSession": "0x0a4b80066758935401b0d349578e53356e74c632f4af19974051dd69731c15dd",
+      "jobCompleted": null,
+      "jobId": "1178",
+      "submitJob_status": 1,
+      "block": 1148185,
+      "completion": "0xefee9e03664c15218ff86042a8e3333a521801800bac722264735daa3cf08dda"
+    }
+  ],
+  "score": 4,
+  "max": 4,
+  "tested_at": "2026-07-10T14:14:25.535Z"
+}

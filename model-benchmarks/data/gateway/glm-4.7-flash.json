@@ -1,0 +1,51 @@
+{
+  "model": "glm-4.7-flash",
+  "type": "coding",
+  "tests": [
+    {
+      "id": "merge_intervals",
+      "pass": true,
+      "seconds": 73.6,
+      "detail": "PASS",
+      "answer_excerpt": "```python\ndef merge_intervals(intervals):\n    if not intervals:\n        return []\n    intervals.sort(key=lambda x: x[0])\n    merged = [intervals[0]]\n    for start, end in intervals[1:]:\n        last_start, last_end = merged[-1]\n        if start <= last_end:\n            merged[-1][1] = max(last_end, end)\n        else:\n            merged.append([start, end])\n    return merged\n```",
+      "submitJob": "0x27b4735e95ded2d86bc5395eb646129270edcfa0031d535d90323f084a118bc2",
+      "createSession": "0x8161986c237b5d9b7ac3c7dfdf8ccc851a720408724d73f085d00de95cd3944c",
+      "jobCompleted": null,
+      "jobId": "1172",
+      "submitJob_status": 1,
+      "block": 1148118,
+      "completion": "0xe86e270ea6b376e860c772f87d2983890f89eabc237efb80867ae76addddbda7"
+    },
+    {
+      "id": "lcs_length",
+      "pass": true,
+      "seconds": 65.6,
+      "detail": "PASS",
+      "answer_excerpt": "```python\ndef longest_common_subsequence(a, b):\n    \"\"\"\n    Returns the length of the longest common subsequence of strings a and b.\n    \"\"\"\n    m, n = len(a), len(b)\n    # DP with two rows to save space\n    prev = [0] * (n + 1)\n    for i in range(1, m + 1):\n        curr = [0] * (n + 1)\n        for j in range(1, n + 1):\n            if a[i-1] == b[j-1]:\n                curr[j] = prev[j-1] + 1\n            else:\n                curr[j] = max(prev[j], curr[j-1])\n        prev = curr\n    return prev[n]\n```",
+      "submitJob": "0x03d699b8bf2162d721a92e7784c6b476bcac27dafa15c56b79533d22487a619a",
+      "createSession": "0x7753d5ba4307de72ec63ff761ce6a680162277562f6659eb1226ea6e387e9ce8",
+      "jobCompleted": null,
+      "jobId": "1173",
+      "submitJob_status": 1,
+      "block": 1148130,
+      "completion": "0xe6a6178632b16b28e757f9a3bda78ce92570034df68a887e44a92c2548f735d2"
+    },
+    {
+      "id": "lru_cache",
+      "pass": true,
+      "seconds": 77,
+      "detail": "PASS",
+      "answer_excerpt": "```python\nclass LRUCache:\n    class Node:\n        def __init__(self, key, val):\n            self.key = key\n            self.val = val\n            self.prev = None\n            self.next = None\n\n    def __init__(self, capacity: int):\n        self.cap = capacity\n        self.cache = {}\n        self.head = self.Node(0, 0)\n        self.tail = self.Node(0, 0)\n        self.head.next = self.tail\n        self.tail.prev = self.head\n\n    def _remove(self, node):\n        prev_node = node.prev\n        next_node = node.next\n        prev_node.next = next_node\n        next_node.prev = prev_node\n\n    def _add(",
+      "submitJob": "0x600a18d080c03256bdf7a138911be8faef52f33e903e474b175d5502e5caf5e0",
+      "createSession": "0x5f3ea22c8acae1b3d0bb7db4af5bd1695c38d32a6e3f7404dcebd6fdf5955649",
+      "jobCompleted": null,
+      "jobId": "1174",
+      "submitJob_status": 1,
+      "block": 1148142,
+      "completion": "0x8cd41aa9ac4ebb9cea08e87856b971bc2279805d648bfcf22e1dcb2551f926f5"
+    }
+  ],
+  "score": 3,
+  "max": 3,
+  "tested_at": "2026-07-10T14:10:27.844Z"
+}

@@ -1,0 +1,61 @@
+{
+  "model": "qwen3-embedding:0.6b",
+  "gpu": "NVIDIA GeForce RTX 3090",
+  "specs": {
+    "vram_load_gb": 2.58,
+    "vram_bigctx_gb": 2.58,
+    "disk_gb": 5.4,
+    "cold_load_s": 12.4,
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "qwen3",
+      "families": [
+        "qwen3"
+      ],
+      "parameter_size": "595.78M",
+      "quantization_level": "Q8_0"
+    }
+  },
+  "type": "embedding",
+  "tests": [
+    {
+      "id": "retrieval",
+      "pass": true,
+      "precision_at_k": 1,
+      "dim": 1024,
+      "ranked": [
+        {
+          "rel": true,
+          "sim": 0.6876,
+          "t": "To change your login credentials, open account set"
+        },
+        {
+          "rel": true,
+          "sim": 0.6051,
+          "t": "If you forgot your password, use the password reco"
+        },
+        {
+          "rel": false,
+          "sim": 0.3438,
+          "t": "Bluetooth pairing requires holding the device butt"
+        },
+        {
+          "rel": false,
+          "sim": 0.244,
+          "t": "Our refund policy allows returns within 30 days of"
+        },
+        {
+          "rel": false,
+          "sim": 0.2398,
+          "t": "The store opens at 9am on weekdays and is closed o"
+        }
+      ],
+      "seconds": 8
+    }
+  ],
+  "score": 2,
+  "max": 2,
+  "dim": 1024,
+  "tested_at": "2026-07-10T13:56:32.987Z"
+}

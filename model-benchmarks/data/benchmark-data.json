@@ -1,0 +1,606 @@
+[
+  {
+    "model": "glm-4.7-flash",
+    "type": "coding",
+    "gpu_tested": "NVIDIA GeForce RTX 3090",
+    "chain": {
+      "fee": 0.02,
+      "modelId": "0x35f686ade96649d2bf47e024eca280619fc80458c5cdece4804fc3f1561bd542"
+    },
+    "direct_score": "3/3",
+    "direct_tests": [
+      {
+        "id": "merge_intervals",
+        "pass": true,
+        "seconds": 11.7,
+        "tps": 139.7,
+        "detail": "PASS",
+        "output_excerpt": "def merge_intervals(intervals):\n    \"\"\"\n    Merges all overlapping intervals in a list of [start, end] pairs and returns the merged list.\n    \n    Args:\n        intervals: A list of lists, where each inner list contains two integers [start, end].\n        \n    Returns:\n        A list of lists representing the merged intervals.\n    \"\"\"\n    if not intervals:\n        return []\n    \n    # Sort intervals based on the start time\n    intervals.sort(key=lambda x: x[0])\n    \n    merged = []\n    current_st"
+      },
+      {
+        "id": "lcs_length",
+        "pass": true,
+        "seconds": 2.4,
+        "tps": 141.3,
+        "detail": "PASS",
+        "output_excerpt": "def longest_common_subsequence(a, b):\n    \"\"\"\n    Returns the length of the longest common subsequence of strings a and b.\n    \"\"\"\n    m, n = len(a), len(b)\n    \n    # Create a 2D array to store lengths of longest common subsequence.\n    # We only need the previous row to compute the current row.\n    # Initialize with 0s.\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    \n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if a[i - 1] == b[j - 1]:\n                dp[i][j"
+      },
+      {
+        "id": "lru_cache",
+        "pass": true,
+        "seconds": 2.1,
+        "tps": 141.3,
+        "detail": "PASS",
+        "output_excerpt": "class LRUCache:\n\n    def __init__(self, capacity: int):\n        self.capacity = capacity\n        self.cache = {}\n        self.order = []\n\n    def get(self, key: int) -> int:\n        if key in self.cache:\n            self.order.remove(key)\n            self.order.append(key)\n            return self.cache[key]\n        return -1\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.order.remove(key)\n        elif len(self.cache) >= self.capacity:\n           "
+      }
+    ],
+    "embedding_dim": null,
+    "specs": {
+      "vram_load_gb": 17.82,
+      "vram_bigctx_gb": 18.03,
+      "disk_gb": 17.8,
+      "cold_load_s": 56.1,
+      "warm_tokens_per_sec_median": 141.3,
+      "quant": "Q4_K_M",
+      "params": "29.9B",
+      "min_card_gb": 24,
+      "recommended_card_gb": 24
+    },
+    "gateway": {
+      "deliverable": true,
+      "score": "3/3",
+      "tests": [
+        {
+          "id": "merge_intervals",
+          "pass": true,
+          "seconds": 73.6,
+          "detail": "PASS",
+          "answer_excerpt": "```python\ndef merge_intervals(intervals):\n    if not intervals:\n        return []\n    intervals.sort(key=lambda x: x[0])\n    merged = [intervals[0]]\n    for start, end in intervals[1:]:\n        last_start, last_end = merged[-1]\n        if start <= last_end:\n            merged[-1][1] = max(last_end, end)\n        else:\n            merged.append([start, end])\n    return merged\n```",
+          "submitJob": "0x27b4735e95ded2d86bc5395eb646129270edcfa0031d535d90323f084a118bc2",
+          "createSession": "0x8161986c237b5d9b7ac3c7dfdf8ccc851a720408724d73f085d00de95cd3944c",
+          "jobCompleted": null,
+          "jobId": "1172",
+          "submitJob_status": 1,
+          "block": 1148118,
+          "completion": "0xe86e270ea6b376e860c772f87d2983890f89eabc237efb80867ae76addddbda7",
+          "submitJob_url": "https://testnet.lightscan.app/tx/0x27b4735e95ded2d86bc5395eb646129270edcfa0031d535d90323f084a118bc2"
+        },
+        {
+          "id": "lcs_length",
+          "pass": true,
+          "seconds": 65.6,
+          "detail": "PASS",
+          "answer_excerpt": "```python\ndef longest_common_subsequence(a, b):\n    \"\"\"\n    Returns the length of the longest common subsequence of strings a and b.\n    \"\"\"\n    m, n = len(a), len(b)\n    # DP with two rows to save space\n    prev = [0] * (n + 1)\n    for i in range(1, m + 1):\n        curr = [0] * (n + 1)\n        for j in range(1, n + 1):\n            if a[i-1] == b[j-1]:\n                curr[j] = prev[j-1] + 1\n            else:\n                curr[j] = max(prev[j], curr[j-1])\n        prev = curr\n    return prev[n]\n```",
+          "submitJob": "0x03d699b8bf2162d721a92e7784c6b476bcac27dafa15c56b79533d22487a619a",
+          "createSession": "0x7753d5ba4307de72ec63ff761ce6a680162277562f6659eb1226ea6e387e9ce8",
+          "jobCompleted": null,
+          "jobId": "1173",
+          "submitJob_status": 1,
+          "block": 1148130,
+          "completion": "0xe6a6178632b16b28e757f9a3bda78ce92570034df68a887e44a92c2548f735d2",
+          "submitJob_url": "https://testnet.lightscan.app/tx/0x03d699b8bf2162d721a92e7784c6b476bcac27dafa15c56b79533d22487a619a"
+        },
+        {
+          "id": "lru_cache",
+          "pass": true,
+          "seconds": 77,
+          "detail": "PASS",
+          "answer_excerpt": "```python\nclass LRUCache:\n    class Node:\n        def __init__(self, key, val):\n            self.key = key\n            self.val = val\n            self.prev = None\n            self.next = None\n\n    def __init__(self, capacity: int):\n        self.cap = capacity\n        self.cache = {}\n        self.head = self.Node(0, 0)\n        self.tail = self.Node(0, 0)\n        self.head.next = self.tail\n        self.tail.prev = self.head\n\n    def _remove(self, node):\n        prev_node = node.prev\n        next_node = node.next\n        prev_node.next = next_node\n        next_node.prev = prev_node\n\n    def _add(",
+          "submitJob": "0x600a18d080c03256bdf7a138911be8faef52f33e903e474b175d5502e5caf5e0",
+          "createSession": "0x5f3ea22c8acae1b3d0bb7db4af5bd1695c38d32a6e3f7404dcebd6fdf5955649",
+          "jobCompleted": null,
+          "jobId": "1174",
+          "submitJob_status": 1,
+          "block": 1148142,
+          "completion": "0x8cd41aa9ac4ebb9cea08e87856b971bc2279805d648bfcf22e1dcb2551f926f5",
+          "submitJob_url": "https://testnet.lightscan.app/tx/0x600a18d080c03256bdf7a138911be8faef52f33e903e474b175d5502e5caf5e0"
+        }
+      ]
+    },
+    "e2e_hello_tx": {
+      "submitJob": "0xe0e79e206f20ff1297f3046b5ad18697e89a3077c95726bd1fd3a61b6c570d3f",
+      "submitJob_url": "https://testnet.lightscan.app/tx/0xe0e79e206f20ff1297f3046b5ad18697e89a3077c95726bd1fd3a61b6c570d3f",
+      "completion": "0xe1a20500898adcd7e342551266a0c0c42504109f5525bceb0c6dce432acec8bb",
+      "completion_url": "https://testnet.lightscan.app/tx/0xe1a20500898adcd7e342551266a0c0c42504109f5525bceb0c6dce432acec8bb"
+    }
+  },
+  {
+    "model": "gpt-oss:20b",
+    "type": "reasoning",
+    "gpu_tested": "NVIDIA GeForce RTX 3090",
+    "chain": {
+      "fee": 0.04,
+      "modelId": "0x812058e1dbc4b7ee2b5c8db96cd83bdc110740ae43d3fa4ee116e7e38e2ea802"
+    },
+    "direct_score": "4/4",
+    "direct_tests": [
+      {
+        "id": "word_problem",
+        "pass": true,
+        "expected": "120",
+        "got": "120**",
+        "seconds": 12,
+        "tps": 124.2,
+        "output_excerpt": "First, the store had **240** apples.  \n- In the morning it sold one‑third of them: \\( \\frac{1}{3}\\times 240 = 80\\) apples were sold.  \n- Apples remaining after the morning sale: \\(240 - 80 = 160\\).\n\nNext, in the afternoon it sold 25% of those remaining apples:  \n\\(0.25\\times 160 = 40\\) apples were sold.\n\nApples left after both sales:  \n\\(160 - 40 = 120\\).\n\n**FINAL: 120**"
+      },
+      {
+        "id": "logic_pets",
+        "pass": true,
+        "expected": "carol",
+        "got": "Carol**",
+        "seconds": 2.3,
+        "tps": 125.2,
+        "output_excerpt": "Carol owns the cat.  \n**FINAL: Carol**"
+      },
+      {
+        "id": "combinatorics",
+        "pass": true,
+        "expected": "328",
+        "got": "328",
+        "seconds": 20.7,
+        "tps": 123.8,
+        "output_excerpt": "To form a three‑digit number \\(abc\\) (with \\(a,b,c\\) the hundreds, tens and units digits):\n\n1. **Units digit must be even**  \n   \\[\n   c \\in \\{0,2,4,6,8\\}\\quad(5\\text{ choices})\n   \\]\n\n2. **All digits distinct**  \n3. **Hundreds digit cannot be \\(0\\)**\n\nWe count separately the two possibilities for the units digit.\n\n---\n\n### Case 1: \\(c = 0\\)\n\n- Hundreds digit \\(a\\) can be any of \\(1,2,\\dots ,9\\): "
+      },
+      {
+        "id": "multistep_rate",
+        "pass": true,
+        "expected": "40",
+        "got": "40",
+        "seconds": 4,
+        "tps": 124.4,
+        "output_excerpt": "The net filling rate of the tank is \\(12 \\text{ L/min} - 4 \\text{ L/min} = 8 \\text{ L/min}\\).  \nTo accumulate \\(320\\) liters:\n\n\\[\nt = \\frac{320 \\text{ L}}{8 \\text{ L/min}} = 40 \\text{ minutes}\n\\]\n\nSo it will take **40 minutes** to reach 320 liters.\n\nFINAL: 40"
+      }
+    ],
+    "embedding_dim": null,
+    "specs": {
+      "vram_load_gb": 11.86,
+      "vram_bigctx_gb": 11.97,
+      "disk_gb": 11.9,
+      "cold_load_s": 15.2,
+      "warm_tokens_per_sec_median": 124.4,
+      "quant": "MXFP4",
+      "params": "20.9B",
+      "min_card_gb": 16,
+      "recommended_card_gb": 16
+    },
+    "gateway": {
+      "deliverable": true,
+      "score": "4/4",
+      "tests": [
+        {
+          "id": "word_problem",
+          "pass": true,
+          "seconds": 68.3,
+          "detail": "expected 120 got 120",
+          "answer_excerpt": "First, the store had **240** apples.\n\n1. **Morning sale:**  \n   One third of 240 is \\( \\frac{1}{3}\\times240 = 80\\).  \n   Apples left after morning: \\(240-80=160\\).\n\n2. **Afternoon sale:**  \n   Twenty‑five percent (25%) of the remaining 160 apples is \\(0.25\\times160 = 40\\).  \n   Apples left after afternoon: \\(160-40=120\\).\n\nSo, after both sales, the store has **120** apples left.\n\nFINAL: 120",
+          "submitJob": "0xe44577b895387727c02e3b409f18076162fd11fd10f2da4098126e5a8b576a12",
+          "createSession": "0xb2aaa05cb27fbfc92c10aa736e4757b83e83c23cf22a2ccdc3f25f018080015f",
+          "jobCompleted": null,
+          "jobId": "1175",
+          "submitJob_status": 1,
+          "block": 1148154,
+          "completion": "0x02d78ed01bc277ab311faf9f6d063cdfaed0766a97adf9d167ecb544fbf1aa50",
+          "submitJob_url": "https://testnet.lightscan.app/tx/0xe44577b895387727c02e3b409f18076162fd11fd10f2da4098126e5a8b576a12"
+        },
+        {
+          "id": "logic_pets",
+          "pass": true,
+          "seconds": 53.4,
+          "detail": "expected carol got carol**",
+          "answer_excerpt": "Carol owns the cat.  \n**FINAL: Carol**",
+          "submitJob": "0x29dbd3cffbdb074fd340fd4b96d7512dfac5b85e523b476dbfab0533f39e44d2",
+          "createSession": "0x719053de295fb502a098fb5f7c48c491f76a93a9e0147c5769c8646c926bb5cd",
+          "jobCompleted": "0xce0fd565f36f515e53f500fb1afc490e4cda2488050fa4b4384d26f25e9272b2",
+          "jobId": "1176",
+          "submitJob_status": 1,
+          "block": 1148166,
+          "completion": "0xce0fd565f36f515e53f500fb1afc490e4cda2488050fa4b4384d26f25e9272b2",
+          "submitJob_url": "https://testnet.lightscan.app/tx/0x29dbd3cffbdb074fd340fd4b96d7512dfac5b85e523b476dbfab0533f39e44d2"
+        },
+        {
+          "id": "combinatorics",
+          "pass": true,
+          "seconds": 63.6,
+          "detail": "expected 328 got 328",
+          "answer_excerpt": "To count the three‑digit even numbers with all distinct digits, consider the units digit first.\n\n**Case 1 – Units digit \\(U = 0\\)**  \n- Hundreds digit \\(H\\) can be any of \\(1–9\\): \\(9\\) choices.  \n- Tens digit \\(T\\) must differ from both \\(H\\) and \\(0\\): \\(10 - 2 = 8\\) choices.  \n\nNumber in this case: \\(9 \\times 8 = 72\\).\n\n**Case 2 – Units digit \\(U\\) is a non‑zero even number (\\(2,4,6,8\\))**  \n- There are \\(4\\) possible values for \\(U\\).  \n- Hundreds digit \\(H\\) can be any of the remaining digits \\(1–9\\) except \\(U\\): \\(8\\) choices.  \n- Tens digit \\(T\\) must differ from both \\(H\\) and \\(U\\): ",
+          "submitJob": "0x6e4bbc69798ca298997af8cffc9a5f5c75bbf9ff4b4438842cc3559a8e856756",
+          "createSession": "0x9957b281f06442ef1563a47134dd14ef48c71b9cffeb43e5f51bd7eb258393b1",
+          "jobCompleted": null,
+          "jobId": "1177",
+          "submitJob_status": 1,
+          "block": 1148175,
+          "completion": "0x4da3cb277b6126dcc651271b6b6e00f2bd902a01ca24cab148355f75c18a0405",
+          "submitJob_url": "https://testnet.lightscan.app/tx/0x6e4bbc69798ca298997af8cffc9a5f5c75bbf9ff4b4438842cc3559a8e856756"
+        },
+        {
+          "id": "multistep_rate",
+          "pass": true,
+          "seconds": 49.9,
+          "detail": "expected 40 got 40",
+          "answer_excerpt": "FINAL: 40",
+          "submitJob": "0x9f82a7ffeb294eccf8efb533efd9c11e9410cedc7137757e5ad106b3216ad519",
+          "createSession": "0x0a4b80066758935401b0d349578e53356e74c632f4af19974051dd69731c15dd",
+          "jobCompleted": null,
+          "jobId": "1178",
+          "submitJob_status": 1,
+          "block": 1148185,
+          "completion": "0xefee9e03664c15218ff86042a8e3333a521801800bac722264735daa3cf08dda",
+          "submitJob_url": "https://testnet.lightscan.app/tx/0x9f82a7ffeb294eccf8efb533efd9c11e9410cedc7137757e5ad106b3216ad519"
+        }
+      ]
+    },
+    "e2e_hello_tx": {
+      "submitJob": "0xdf8bf6213090432be7fa3ca43451baf68307177e8c6f7c59eeeee7459691dfb5",
+      "submitJob_url": "https://testnet.lightscan.app/tx/0xdf8bf6213090432be7fa3ca43451baf68307177e8c6f7c59eeeee7459691dfb5",
+      "completion": "0x0ca2a1bd8c68b28ca1ec8cf012cd330170144ee220a1c31cc3b07919a3527282",
+      "completion_url": "https://testnet.lightscan.app/tx/0x0ca2a1bd8c68b28ca1ec8cf012cd330170144ee220a1c31cc3b07919a3527282"
+    }
+  },
+  {
+    "model": "gpt-oss:120b",
+    "type": "reasoning",
+    "gpu_tested": "NVIDIA A100 80GB PCIe",
+    "chain": {
+      "fee": 0.2,
+      "modelId": "0x7519e6b291d1e88ee9c045dce2d1e9db92a3bba4ed967be12426b3c71bbc7c98"
+    },
+    "direct_score": "4/4",
+    "direct_tests": [
+      {
+        "id": "word_problem",
+        "pass": true,
+        "expected": "120",
+        "got": "120",
+        "seconds": 19,
+        "tps": 118.5,
+        "output_excerpt": "**Step‑by‑step calculation**\n\n1. **Initial amount:** The store starts with \\(240\\) apples.\n\n2. **Morning sales:**  \n   - It sells one third of the apples.  \n   - One third of \\(240\\) is \\(\\dfrac{240}{3}=80\\).  \n   - Apples left after the morning: \\(240-80 = 160\\).\n\n3. **Afternoon sales:**  \n   - It sells \\(25\\%\\) (one quarter) of the remaining apples.  \n   - One quarter of \\(160\\) is \\(\\dfrac{1}{4"
+      },
+      {
+        "id": "logic_pets",
+        "pass": true,
+        "expected": "carol",
+        "got": "Carol",
+        "seconds": 2.3,
+        "tps": 118.8,
+        "output_excerpt": "Carol owns the cat.  \n\nFINAL: Carol"
+      },
+      {
+        "id": "combinatorics",
+        "pass": true,
+        "expected": "328",
+        "got": "328",
+        "seconds": 12.3,
+        "tps": 117.5,
+        "output_excerpt": "To form a three‑digit number \\(abc\\) (hundreds–tens–units):\n\n* \\(a\\) must be from \\(\\{1,2,\\dots ,9\\}\\) (cannot be 0).\n* The number is even ⇒ the units digit \\(c\\) must be one of  \n  \\(\\{0,2,4,6,8\\}\\).\n* All three digits must be distinct: \\(a\\neq b\\), \\(a\\neq c\\), \\(b\\neq c\\).\n\n---\n\n### Case 1 – Units digit \\(c = 0\\)\n\n* Choose the hundreds digit \\(a\\): any of \\(1\\!-\\!9\\) → **9** choices.  \n* Choose"
+      },
+      {
+        "id": "multistep_rate",
+        "pass": true,
+        "expected": "40",
+        "got": "40**",
+        "seconds": 2.4,
+        "tps": 119,
+        "output_excerpt": "The net filling rate is \\(12\\text{ L/min} - 4\\text{ L/min} = 8\\text{ L/min}\\).\n\nTo reach 320 L:\n\\[\n\\frac{320\\ \\text{L}}{8\\ \\text{L/min}} = 40\\ \\text{minutes}\n\\]\n\n**FINAL: 40**"
+      }
+    ],
+    "embedding_dim": null,
+    "specs": {
+      "vram_load_gb": 59.9,
+      "vram_bigctx_gb": 59.91,
+      "disk_gb": 59.9,
+      "cold_load_s": 58.8,
+      "warm_tokens_per_sec_median": 118.8,
+      "quant": "MXFP4",
+      "params": "116.8B",
+      "min_card_gb": 80,
+      "recommended_card_gb": 80
+    },
+    "gateway": {
+      "deliverable": true,
+      "score": "4/4",
+      "tests": [
+        {
+          "id": "word_problem",
+          "pass": true,
+          "seconds": 99,
+          "detail": "expected 120 got 120",
+          "answer_excerpt": "The store starts with **240 apples**.\n\n1. **Morning sales:**  \n   It sells one‑third of the apples.  \n   \\[\n   \\frac{1}{3}\\times240 = 80\\text{ apples}\n   \\]\n   Apples left after the morning:  \n   \\[\n   240-80 = 160\n   \\]\n\n2. **Afternoon sales:**  \n   It sells 25 % of the remaining apples.  \n   \\[\n   0.25\\times160 = 40\\text{ apples}\n   \\]\n   Apples left after the afternoon:  \n   \\[\n   160-40 = 120\n   \\]\n\nSo, after both sales periods, **120 apples remain**.\n\nFINAL: 120",
+          "submitJob": "0x7f417d8359429e1f19c980aa9d4284115d926693a63a01eb06542c3f9357718c",
+          "createSession": "0x627344a73e35fd39e1ae27f00e8ca68583a0431cb262847996f30b8ee7882489",
+          "jobCompleted": null,
+          "jobId": "1179",
+          "submitJob_status": 1,
+          "block": 1148194,
+          "completion": "0xcb0e579b55cbc7445b03fd289863f976b057c257befa4ce602ac637dc98f31d2",
+          "submitJob_url": "https://testnet.lightscan.app/tx/0x7f417d8359429e1f19c980aa9d4284115d926693a63a01eb06542c3f9357718c"
+        },
+        {
+          "id": "logic_pets",
+          "pass": true,
+          "seconds": 49.8,
+          "detail": "expected carol got carol",
+          "answer_excerpt": "The only arrangement that satisfies all the conditions is:\n\n- Bob → fish (given)  \n- Alice cannot have the cat, so she must have the dog.  \n- That leaves the cat for the remaining person, Carol.\n\n**Carol owns the cat.**\n\nFINAL: Carol",
+          "submitJob": "0xd71f6df4bc4ac30b3167e6c5f160a18e84b596d158df19be347bbc9b58d58e9d",
+          "createSession": "0x82153ee0584989b3b962612aea7f101ea23166c6bc59fcc21f2a11228d17c28c",
+          "jobCompleted": null,
+          "jobId": "1180",
+          "submitJob_status": 1,
+          "block": 1148210,
+          "completion": "0xbaa81dd4bffcc715252bd548f4b7d729ddb4ce517ba20a1c041c7468f9c2510d",
+          "submitJob_url": "https://testnet.lightscan.app/tx/0xd71f6df4bc4ac30b3167e6c5f160a18e84b596d158df19be347bbc9b58d58e9d"
+        },
+        {
+          "id": "combinatorics",
+          "pass": true,
+          "seconds": 65.7,
+          "detail": "expected 328 got 328",
+          "answer_excerpt": "To form a three‑digit number \\(abc\\) (hundreds–tens–units):\n\n* \\(a\\) (hundreds) can be any digit \\(1-9\\).\n* \\(b\\) (tens) can be any digit \\(0-9\\) different from the other chosen digits.\n* The number must be **even**, so the units digit \\(c\\) must be one of \\(\\{0,2,4,6,8\\}\\).\n\nWe count separately according to the value of the units digit.\n\n---\n\n### 1. Units digit \\(c = 0\\)\n\n* Choose \\(a\\): any of \\(1-9\\) → **9** ways.\n* Choose \\(b\\): any digit except \\(a\\) and \\(0\\) → \\(10-2 = 8\\) ways.\n\n\\[\n9 \\times 8 = 72 \\text{ numbers.}\n\\]\n\n---\n\n### 2. Units digit \\(c \\in \\{2,4,6,8\\}\\) (non‑zero even)\n\n* Cho",
+          "submitJob": "0xe5fffcda511f0438cf702f3b3834122c5f935271d4bb0b45ab9dc14325698544",
+          "createSession": "0x3c19096858c027a84cfdc2e2744a800497d7f23d5c680b4cdb47aeb6c6754a2a",
+          "jobCompleted": null,
+          "jobId": "1181",
+          "submitJob_status": 1,
+          "block": 1148219,
+          "completion": "0xe8cf3034287701a00f308c7a2dc3e52ad60a372b02f56dda486ec5143dae6f83",
+          "submitJob_url": "https://testnet.lightscan.app/tx/0xe5fffcda511f0438cf702f3b3834122c5f935271d4bb0b45ab9dc14325698544"
+        },
+        {
+          "id": "multistep_rate",
+          "pass": true,
+          "seconds": 53.2,
+          "detail": "expected 40 got 40",
+          "answer_excerpt": "The tank’s net fill rate is the difference between the inflow and outflow:\n\n\\[\n12 \\text{ L/min} - 4 \\text{ L/min} = 8 \\text{ L/min}\n\\]\n\nTo accumulate 320 L at this constant net rate, the required time \\(t\\) is\n\n\\[\nt = \\frac{320\\ \\text{L}}{8\\ \\text{L/min}} = 40\\ \\text{minutes}.\n\\]\n\n**Answer:** It will take **40 minutes** for the tank to reach 320 L.\n\nFINAL: 40",
+          "submitJob": "0x1a3f23b9943dba2ba5af9c57bae9ab186cadb476b019bf3186123f184b43d7d1",
+          "createSession": "0x7aeee91d722a57c4554dd66226bfa4956bf0524b49b466088127c16b0136f935",
+          "jobCompleted": null,
+          "jobId": "1182",
+          "submitJob_status": 1,
+          "block": 1148230,
+          "completion": "0x7e6c9b3039ffaee00d064c627d9dabaa79ee19b1bad54e0389e5c08313ba5c0f",
+          "submitJob_url": "https://testnet.lightscan.app/tx/0x1a3f23b9943dba2ba5af9c57bae9ab186cadb476b019bf3186123f184b43d7d1"
+        }
+      ]
+    },
+    "e2e_hello_tx": null
+  },
+  {
+    "model": "qwen3-vl:8b",
+    "type": "vision",
+    "gpu_tested": "NVIDIA GeForce RTX 3090",
+    "chain": {
+      "fee": 0.02,
+      "modelId": "0xab5055d54803561873a25c21f4cc853371b17b69620b39b2ecca824c259b2ff3"
+    },
+    "direct_score": "12/12",
+    "direct_tests": [
+      {
+        "id": "ocr",
+        "pass": true,
+        "facts_hit": 5,
+        "facts_total": 5,
+        "expected": {
+          "invoice_number": "A-7391",
+          "date": "2026-07-10",
+          "quantity": "3",
+          "unit_price": "128.50",
+          "total_due": "385.50"
+        },
+        "seconds": 9.1,
+        "tps": 112.1,
+        "output_excerpt": "Invoice number: #A-7391  \nDate: 2026-07-10  \nItem quantity: 3  \nUnit price: $128.50  \nTotal due: $385.50"
+      },
+      {
+        "id": "chart",
+        "pass": true,
+        "facts_hit": 3,
+        "facts_total": 3,
+        "expected": {
+          "highest_day": "Wed",
+          "highest_value": "63",
+          "tuesday_value": "17"
+        },
+        "seconds": 2.7,
+        "tps": 112.3,
+        "output_excerpt": "The day with the highest value is Wednesday, the highest value is 63, and the value for Tuesday is 17."
+      },
+      {
+        "id": "shapes",
+        "pass": true,
+        "facts_hit": 2,
+        "facts_total": 2,
+        "expected": {
+          "red_circles": "4",
+          "total_shapes": "14"
+        },
+        "seconds": 8.8,
+        "tps": 110.1,
+        "output_excerpt": "To determine the number of **RED CIRCLES** and the **TOTAL NUMBER OF SHAPES**, we analyze the image:  \n\n### Step 1: Count RED CIRCLES  \n- Identify all red circular shapes.  \n- There are **4 red circles** (positions: top-left, middle-left, top-middle-right, and right-top).    \n\n### Step 2: Count TOTAL SHAPES  \n- **Circles**: 4 red + 3 blue = **7 circles**.  \n- **Squares**: 5 red + 2 green = **7 squ"
+      },
+      {
+        "id": "table",
+        "pass": true,
+        "facts_hit": 2,
+        "facts_total": 2,
+        "expected": {
+          "beta_price": "14.50",
+          "alpha_stock": "12"
+        },
+        "seconds": 2.7,
+        "tps": 111.4,
+        "output_excerpt": "The price of Beta is 14.50, and the number of units of Alpha in stock is 12."
+      }
+    ],
+    "embedding_dim": null,
+    "specs": {
+      "vram_load_gb": 5.4,
+      "vram_bigctx_gb": 6.09,
+      "disk_gb": 5.4,
+      "cold_load_s": 8.7,
+      "warm_tokens_per_sec_median": 112.1,
+      "quant": "Q4_K_M",
+      "params": "8.8B",
+      "min_card_gb": 8,
+      "recommended_card_gb": 8
+    },
+    "gateway": {
+      "deliverable": false
+    },
+    "e2e_hello_tx": {
+      "submitJob": "0x9d8957b126f47dd20379c8a68f8bfbd3283953153a222f10f85db9f9c69d6151",
+      "submitJob_url": "https://testnet.lightscan.app/tx/0x9d8957b126f47dd20379c8a68f8bfbd3283953153a222f10f85db9f9c69d6151",
+      "completion": "0xeae582b30c65f3a257644612829e669779102916bcad05fff1e42755cf0a3b6e",
+      "completion_url": "https://testnet.lightscan.app/tx/0xeae582b30c65f3a257644612829e669779102916bcad05fff1e42755cf0a3b6e"
+    }
+  },
+  {
+    "model": "qwen3-vl:30b",
+    "type": "vision",
+    "gpu_tested": "NVIDIA GeForce RTX 3090",
+    "chain": {
+      "fee": 0.08,
+      "modelId": "0x18db253105a3231f058bd6a14970d9230a64a9e54df29e47cc5c6c355c1a84ca"
+    },
+    "direct_score": "12/12",
+    "direct_tests": [
+      {
+        "id": "ocr",
+        "pass": true,
+        "facts_hit": 5,
+        "facts_total": 5,
+        "expected": {
+          "invoice_number": "A-7391",
+          "date": "2026-07-10",
+          "quantity": "3",
+          "unit_price": "128.50",
+          "total_due": "385.50"
+        },
+        "seconds": 12.4,
+        "tps": 150.7,
+        "output_excerpt": "Invoice number: #A-7391  \nDate: 2026-07-10  \nItem quantity: x3  \nUnit price: $128.50  \nTotal due: $385.50"
+      },
+      {
+        "id": "chart",
+        "pass": true,
+        "facts_hit": 3,
+        "facts_total": 3,
+        "expected": {
+          "highest_day": "Wed",
+          "highest_value": "63",
+          "tuesday_value": "17"
+        },
+        "seconds": 3,
+        "tps": 151.1,
+        "output_excerpt": "To determine the answers, we analyze the bar chart:  \n\n- **Highest value day**: Identify the tallest bar. The bar for Wednesday (Wed) has a value of 63, which is higher than all other days’ values.  \n- **Highest value**: The value above the Wednesday bar is 63.  \n- **Tuesday’s value**: The bar for Tuesday (Tue) shows a value of 17.  \n\n\nWednesday has the highest value, which is 63, and Tuesday's va"
+      },
+      {
+        "id": "shapes",
+        "pass": true,
+        "facts_hit": 2,
+        "facts_total": 2,
+        "expected": {
+          "red_circles": "4",
+          "total_shapes": "14"
+        },
+        "seconds": 6.3,
+        "tps": 151.8,
+        "output_excerpt": "To determine the number of **RED CIRCLES** and the **TOTAL NUMBER OF SHAPES**, we analyze the image step by step:\n\n---\n\n### Step 1: Count Red Circles\n- In the top row, there are **4 red circles** (the first four shapes from the left).\n- There are no other red circles in the middle or bottom rows.\n  \n✅ **Red Circles = 4**\n\n---\n\n### Step 2: Count Total Shapes\nWe count all shapes (circles and squares"
+      },
+      {
+        "id": "table",
+        "pass": true,
+        "facts_hit": 2,
+        "facts_total": 2,
+        "expected": {
+          "beta_price": "14.50",
+          "alpha_stock": "12"
+        },
+        "seconds": 2.9,
+        "tps": 152.3,
+        "output_excerpt": "To determine the price of Beta and the stock units of Alpha, we analyze the table:  \n\n- For **Beta**: Locate the \"Price\" column in the row for \"Beta\". The value there is 14.50.  \n- For **Alpha**: Locate the \"Stock\" column in the row for \"Alpha\". The value there is 12.    \n\nThus, the price of Beta is 14.50 and the stock units of Alpha are 12."
+      }
+    ],
+    "embedding_dim": null,
+    "specs": {
+      "vram_load_gb": 17.93,
+      "vram_bigctx_gb": 18.31,
+      "disk_gb": 17.9,
+      "cold_load_s": 10.2,
+      "warm_tokens_per_sec_median": 151.8,
+      "quant": "Q4_K_M",
+      "params": "31.1B",
+      "min_card_gb": 24,
+      "recommended_card_gb": 24
+    },
+    "gateway": {
+      "deliverable": false
+    },
+    "e2e_hello_tx": {
+      "submitJob": "0x261d5d78933e0638a79d872d1efa54a78cb04b03405f8c8f51afddbf46274088",
+      "submitJob_url": "https://testnet.lightscan.app/tx/0x261d5d78933e0638a79d872d1efa54a78cb04b03405f8c8f51afddbf46274088",
+      "completion": "0xc6cda38d08830725df3266ffb76ab83daff90a55ada72850ea1e76f11ad1e0d5",
+      "completion_url": "https://testnet.lightscan.app/tx/0xc6cda38d08830725df3266ffb76ab83daff90a55ada72850ea1e76f11ad1e0d5"
+    }
+  },
+  {
+    "model": "qwen3-embedding:0.6b",
+    "type": "embedding",
+    "gpu_tested": "NVIDIA GeForce RTX 3090",
+    "chain": {
+      "fee": 0.005,
+      "modelId": "0xde701c92d38c91686d6f7f44f9b634b3adf16b8e79bb9094abfec66180a18f67"
+    },
+    "direct_score": "2/2",
+    "direct_tests": [
+      {
+        "id": "retrieval",
+        "pass": true,
+        "precision_at_k": 1,
+        "dim": 1024,
+        "ranked": [
+          {
+            "rel": true,
+            "sim": 0.6876,
+            "t": "To change your login credentials, open account set"
+          },
+          {
+            "rel": true,
+            "sim": 0.6051,
+            "t": "If you forgot your password, use the password reco"
+          },
+          {
+            "rel": false,
+            "sim": 0.3438,
+            "t": "Bluetooth pairing requires holding the device butt"
+          },
+          {
+            "rel": false,
+            "sim": 0.244,
+            "t": "Our refund policy allows returns within 30 days of"
+          },
+          {
+            "rel": false,
+            "sim": 0.2398,
+            "t": "The store opens at 9am on weekdays and is closed o"
+          }
+        ],
+        "seconds": 8
+      }
+    ],
+    "embedding_dim": 1024,
+    "specs": {
+      "vram_load_gb": 2.58,
+      "vram_bigctx_gb": 2.58,
+      "disk_gb": 5.4,
+      "cold_load_s": 12.4,
+      "warm_tokens_per_sec_median": null,
+      "quant": "Q8_0",
+      "params": "595.78M",
+      "min_card_gb": 8,
+      "recommended_card_gb": 8
+    },
+    "gateway": {
+      "deliverable": false
+    },
+    "e2e_hello_tx": null
+  }
+]

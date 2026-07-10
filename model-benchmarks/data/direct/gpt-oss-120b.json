@@ -1,0 +1,62 @@
+{
+  "model": "gpt-oss:120b",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "specs": {
+    "vram_load_gb": 59.9,
+    "vram_bigctx_gb": 59.91,
+    "disk_gb": 59.9,
+    "cold_load_s": 58.8,
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "gptoss",
+      "families": [
+        "gptoss"
+      ],
+      "parameter_size": "116.8B",
+      "quantization_level": "MXFP4"
+    }
+  },
+  "type": "reasoning",
+  "tests": [
+    {
+      "id": "word_problem",
+      "pass": true,
+      "expected": "120",
+      "got": "120",
+      "seconds": 19,
+      "tps": 118.5,
+      "output_excerpt": "**Step‑by‑step calculation**\n\n1. **Initial amount:** The store starts with \\(240\\) apples.\n\n2. **Morning sales:**  \n   - It sells one third of the apples.  \n   - One third of \\(240\\) is \\(\\dfrac{240}{3}=80\\).  \n   - Apples left after the morning: \\(240-80 = 160\\).\n\n3. **Afternoon sales:**  \n   - It sells \\(25\\%\\) (one quarter) of the remaining apples.  \n   - One quarter of \\(160\\) is \\(\\dfrac{1}{4"
+    },
+    {
+      "id": "logic_pets",
+      "pass": true,
+      "expected": "carol",
+      "got": "Carol",
+      "seconds": 2.3,
+      "tps": 118.8,
+      "output_excerpt": "Carol owns the cat.  \n\nFINAL: Carol"
+    },
+    {
+      "id": "combinatorics",
+      "pass": true,
+      "expected": "328",
+      "got": "328",
+      "seconds": 12.3,
+      "tps": 117.5,
+      "output_excerpt": "To form a three‑digit number \\(abc\\) (hundreds–tens–units):\n\n* \\(a\\) must be from \\(\\{1,2,\\dots ,9\\}\\) (cannot be 0).\n* The number is even ⇒ the units digit \\(c\\) must be one of  \n  \\(\\{0,2,4,6,8\\}\\).\n* All three digits must be distinct: \\(a\\neq b\\), \\(a\\neq c\\), \\(b\\neq c\\).\n\n---\n\n### Case 1 – Units digit \\(c = 0\\)\n\n* Choose the hundreds digit \\(a\\): any of \\(1\\!-\\!9\\) → **9** choices.  \n* Choose"
+    },
+    {
+      "id": "multistep_rate",
+      "pass": true,
+      "expected": "40",
+      "got": "40**",
+      "seconds": 2.4,
+      "tps": 119,
+      "output_excerpt": "The net filling rate is \\(12\\text{ L/min} - 4\\text{ L/min} = 8\\text{ L/min}\\).\n\nTo reach 320 L:\n\\[\n\\frac{320\\ \\text{L}}{8\\ \\text{L/min}} = 40\\ \\text{minutes}\n\\]\n\n**FINAL: 40**"
+    }
+  ],
+  "score": 4,
+  "max": 4,
+  "tested_at": "2026-07-10T13:44:20.476Z"
+}

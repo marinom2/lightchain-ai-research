@@ -1,0 +1,38 @@
+{
+  "ocr": {
+    "image": "ocr.png",
+    "prompt": "Read this invoice image and report exactly: the invoice number, the date, the item quantity, the unit price, and the total due.",
+    "facts": {
+      "invoice_number": "A-7391",
+      "date": "2026-07-10",
+      "quantity": "3",
+      "unit_price": "128.50",
+      "total_due": "385.50"
+    }
+  },
+  "chart": {
+    "image": "chart.png",
+    "prompt": "This bar chart shows weekly sales, with each bar's value printed above it. Which day has the highest value, what is that highest value, and what is the value for Tuesday? Give the day name and both numbers.",
+    "facts": {
+      "highest_day": "Wed",
+      "highest_value": "63",
+      "tuesday_value": "17"
+    }
+  },
+  "shapes": {
+    "image": "shapes.png",
+    "prompt": "Count the shapes in this image. How many RED CIRCLES are there, and how many shapes are there in TOTAL? Give both numbers.",
+    "facts": {
+      "red_circles": "4",
+      "total_shapes": "14"
+    }
+  },
+  "table": {
+    "image": "table.png",
+    "prompt": "Read this product table. What is the price of Beta, and how many units of Alpha are in stock? Answer the price and the stock number.",
+    "facts": {
+      "beta_price": "14.50",
+      "alpha_stock": "12"
+    }
+  }
+}
