@@ -300,14 +300,14 @@ The `modelId` is `keccak256` of the **exact Ollama tag**, colon form and all (fo
 - **Stake lifecycle.** The worker staked the testnet minimum (5000 LCAI, read from `AIConfig.getMinWorkerStake`) to register and recovered it in full on `deregisterWorker()`, confirming the register/deregister path a real operator would use.
 - **Full consumer job round-trip, all four generative models.** With the worker daemon authenticated to the worker-gateway (SIWE) and its websocket connected, a separate funded consumer wallet submitted a real job to each model through the gateway (ECDH-P-256 + AES-GCM). All four returned a correct, decrypted answer end-to-end:
 
-| Model | Decrypted answer | Cold-path latency | On-chain submitJob |
-|---|---|---|---|
-| glm-4.7-flash | "Hello, I am GLM, an AI assistant." | 132.8s | 0xe0e79e20… (status 1) |
-| gpt-oss:20b | "Hello! I'm ChatGPT." | 113.3s | 0xdf8bf621… (status 1) |
-| qwen3-vl:8b | "Hello, I'm Qwen3." | 80.8s | 0x9d8957b1… (status 1) |
-| qwen3-vl:30b | "Hello! I'm Qwen." | 83.8s | 0x261d5d78… (status 1) |
+| Model | Decrypted answer | Cold-path latency | On-chain submitJob | Worker result commit |
+|---|---|---|---|---|
+| glm-4.7-flash | "Hello, I am GLM, an AI assistant." | 132.8s | 0xe0e79e20… | 0xe1a20500… |
+| gpt-oss:20b | "Hello! I'm ChatGPT." | 113.3s | 0xdf8bf621… | 0x0ca2a1bd… |
+| qwen3-vl:8b | "Hello, I'm Qwen3." | 80.8s | 0x9d8957b1… | 0xeae582b3… |
+| qwen3-vl:30b | "Hello! I'm Qwen." | 83.8s | 0x261d5d78… | 0xc6cda38d… |
 
-  Each job produced a real on-chain `createSession` and `submitJob` (all status 1), and the consumer's balance fell by **exactly 0.16 LCAI**, the precise sum of the four models' on-chain fees (0.02 + 0.04 + 0.02 + 0.08), so `calculateJobFee` charged the correct per-model price for each. The latencies are the cold path: the first job per model pays a one-time model load into the 24GB card plus the SIWE/session setup, so a warm worker serves far faster (see the GPU results table). The answer is delivered over the session-key-encrypted websocket; the on-chain `JobCompleted` commit settles just after, consistent with the lean-attestor design (no re-run). This is the complete path a real user exercises, proven on the six live models' runtime.
+  The full lifecycle is on-chain for every job: a real `createSession`, a `submitJob`, a `JobAcknowledged`, and the worker's own result-commit transaction (all status 1; the commit is sent from the worker to JobRegistry). The consumer's balance fell by **exactly 0.16 LCAI**, the precise sum of the four models' on-chain fees (0.02 + 0.04 + 0.02 + 0.08), so `calculateJobFee` charged the correct per-model price for each. The latencies are the cold path: the first job per model pays a one-time model load into the 24GB card plus the SIWE/session setup, so a warm worker serves far faster (see the GPU results table). The answer reaches the consumer over the session-key-encrypted websocket a little before the commit event is indexed, consistent with the lean-attestor design (no re-run; a 24h dispute window then finalizes settlement). This is the complete path a real user exercises, proven on the six live models' runtime.
 
 **Canonical mainnet contracts (chain 9200; verify on-chain before signing).**
 
