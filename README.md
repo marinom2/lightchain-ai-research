@@ -6,6 +6,11 @@ LightChain AI is a network of people running open AI models on their own GPUs (v
 
 The full write-up is in **[lightchain-ai-model-expansion-2026-06.md](lightchain-ai-model-expansion-2026-06.md)** (plain-English, with a technical appendix). This README is the summary.
 
+### Guides in this repo
+- **[how-lightchain-ai-works-2026-07.md](how-lightchain-ai-works-2026-07.md)** - plain-English walkthrough of the post-upgrade flow (on-chain sortition, reputation, gasless), verified live with transactions.
+- **[worker-setup-and-registration.md](worker-setup-and-registration.md)** - step-by-step operator guide: stand up a worker, register on-chain with a stake, add the whitelisted models, run the daemon, verify, and rotate keys.
+- **[model-benchmarks/RESULTS.md](model-benchmarks/RESULTS.md)** - measured capability + hardware benchmark for the six models, with on-chain txs.
+
 ---
 
 ## The 10 recommended models
