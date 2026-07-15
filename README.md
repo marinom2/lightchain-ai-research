@@ -10,6 +10,7 @@ The full write-up is in **[lightchain-ai-model-expansion-2026-06.md](lightchain-
 - **[how-lightchain-ai-works-2026-07.md](how-lightchain-ai-works-2026-07.md)** - plain-English walkthrough of the post-upgrade flow (on-chain sortition, reputation, gasless), verified live with transactions.
 - **[worker-setup-and-registration.md](worker-setup-and-registration.md)** - step-by-step operator guide: stand up a worker, register on-chain with a stake, add the whitelisted models, run the daemon, verify, and rotate keys.
 - **[model-benchmarks/RESULTS.md](model-benchmarks/RESULTS.md)** - measured capability + hardware benchmark for the six models, with on-chain txs.
+- **[model-comparison-gptoss-vs-llama3-2026-07.md](model-comparison-gptoss-vs-llama3-2026-07.md)** - head-to-head: gpt-oss:120b vs gpt-oss:20b vs llama3-8b on five hard prompts (same worker/GPU), with a plain "what it means for chat" verdict.
 
 ---
 
