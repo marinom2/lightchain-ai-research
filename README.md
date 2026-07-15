@@ -12,6 +12,7 @@ The full write-up is in **[lightchain-ai-model-expansion-2026-06.md](lightchain-
 - **[model-benchmarks/RESULTS.md](model-benchmarks/RESULTS.md)** - measured capability + hardware benchmark for the six models, with on-chain txs.
 - **[model-comparison-gptoss-vs-llama3-2026-07.md](model-comparison-gptoss-vs-llama3-2026-07.md)** - head-to-head: gpt-oss:120b vs gpt-oss:20b vs llama3-8b on five hard prompts (same worker/GPU), with a plain "what it means for chat" verdict.
 - **[model-comparison-coding-2026-07.md](model-comparison-coding-2026-07.md)** - coding head-to-head: glm-4.7-flash, qwen3-coder-next, gpt-oss:120b/20b, llama3-8b on six hard problems, code executed against hidden tests.
+- **[model-comparison-lightchain-assessment-2026-07.md](model-comparison-lightchain-assessment-2026-07.md)** - which model best ASSESSES LightChain itself: same verified brief + five hard questions (what-is-it, whitepaper, workers, security, exchange listing) across all five models.
 
 ---
 
