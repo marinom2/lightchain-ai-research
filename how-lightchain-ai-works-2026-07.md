@@ -150,23 +150,38 @@ If you have a GPU and want to earn:
 
 ---
 
-## 7. Proof it actually works (live testnet run)
+## 7. Proof it actually works (live testnet run, with transactions)
 
-A real prompt run end-to-end through the official gateway on 2026-07-15:
+A real prompt, run end-to-end through the official gateway on 2026-07-15, consumer wallet
+`0x52582C17...b860`. Every hash below is on the explorer at `https://testnet.lightscan.app`.
 
-- Signed in, prepaid + authorized the gateway (one tx).
-- Sortition selected a real worker.
-- Session created on-chain by the gasless delegate; encrypted prompt submitted (a real
-  `submitJob`, jobId 1188).
-- The worker's encrypted answer streamed back and decrypted locally:
-  *"I am LLaMA, a large language model trained by Meta AI..."*
-- **Latency:** sortition ~28s (one-time per session) + inference ~12s = ~54s total; follow-up
-  messages on the same session skip sortition (~12s).
+| Step | What happened | On-chain transaction |
+|---|---|---|
+| Prepay + authorize | Deposited 3 LCAI and authorized the gateway delegate (one-time) | `0x49178897799509b5833251389d22bd7094487a227cf94c1d54fc54350f9ebaee` |
+| Sortition | Selected worker `0xe09E8E45...3185` | (off-chain selection; result recorded via the session tx) |
+| Session created | Gateway delegate created the session **for us, gaslessly** (sessionId 713) | `0x5db47cc6559943f6b46ed615459de59fcb3d047bb8612bf14dcdc6bda0487248` |
+| Job submitted | Encrypted prompt turned into an on-chain job (jobId 1188), **gaslessly** | `0xf87c16da6c2e19279acedbe14793ffd7a558c3f90c001338c6b42c3aa316a772` |
 
-The upgrade itself is verifiable on-chain: the JobRegistry and AIConfig contracts were both
-upgraded on 2026-07-14 at 15:50 UTC by the testnet owner, and a new **ReputationRegistry**
-contract (with `getScore`, `recordCompletion`, `recordDisputeWin/Loss`) was deployed and
-wired in.
+The worker's encrypted answer streamed back and decrypted locally:
+> *"I am LLaMA, a large language model trained by Meta AI that can understand and respond to
+> human input in a conversational manner, based on the transformer architecture and
+> fine-tuned on a massive dataset of text from the internet."*
+
+**Latency:** sortition ~28s (one-time per session) + inference ~12s = ~54s total. Follow-up
+messages on the same session skip sortition (~12s each).
+
+**The upgrade itself is verifiable on-chain** - both proxy contracts were upgraded together on
+2026-07-14 at 15:50 UTC, signed by the testnet owner (`0x7CC4...d483`):
+
+| Contract | Upgrade transaction |
+|---|---|
+| JobRegistry (assignment logic rewritten, +19 functions) | `0xdb8fc906b93960ad5d34fcd91c8302ddb07544d427f930163f83d19138efb0c0` |
+| AIConfig | `0x3fd4330e714c00a272b5c08d9fcd01ff8477c6d758d213ddd38d678bc28dd02c` |
+
+A new **ReputationRegistry** was deployed and wired into JobRegistry - decoded functions
+(the contract isn't source-verified yet, but its selectors reverse cleanly):
+`getScore(address)`, `recordCompletion(address)`, `recordDisputeWin(address)`,
+`recordDisputeLoss(address)`, `START_SCORE()`, `MAX_SCORE()`.
 
 ---
 
@@ -217,5 +232,44 @@ where each step stands today:
   first). Back up worker keys.
 - **Docs/source pending:** the full technical implementation report and open-source release
   are promised *after* the security re-audit.
+
+---
+
+## 10. Reference: addresses, endpoints, and the API flow (testnet, chain 8200)
+
+**Endpoints**
+- RPC: `https://rpc.testnet.lightchain.ai`  ·  Explorer: `https://testnet.lightscan.app`
+- Consumer gateway (official): `https://chat-api.testnet.lightchain.ai`
+- Chat web app: `https://chat.testnet.lightchain.ai`
+- Relay (answer stream): `wss://relay.testnet.lightchain.ai/ws`
+
+**Core contracts**
+- WorkerRegistry (genesis predeploy): `0x0000000000000000000000000000000000001002`  (impl `0xa08ed161...`)
+- JobRegistry (proxy): `0x531b3a87c5d785441b9cf55b98169f20fd9056a7`  (new impl `0x0d0add7f...`)
+- AIConfig (proxy): `0xeCF4Ca5Ba6D97ae586993e170764a1E92231b67e`  (new impl `0xcee0417f...`)
+- ReputationRegistry (new): `0xbb22de7f446b50ce9e5d087464848a0fd1585f14`  (impl `0x39d4c0ab...`)
+- Gateway delegate (authorize this): `0xFDBa3B97BCc393682bf4D16A43E67B1E2059cAC8`
+
+**Consumer HTTP flow (all `Bearer <JWT>` except auth)**
+1. `GET  /api/auth/nonce` · `GET /api/auth/csrf` · `GET /api/auth/challenge?address=…` → sign → `POST /api/auth/verify` → **JWT**
+2. one-time on-chain: `JobRegistry.depositAndAuthorize(delegate)` (payable)
+3. `POST /api/sessions/sortition/request {modelId}` → `{ worker, workerEncryptionKey, disputerEncryptionKey, reqId }`
+4. wrap session key to those keys → `POST /api/sessions/sortition/{reqId}/keys {encWorkerKey, encDisputerKey}` → `{ sessionId, txHash }`
+5. `POST /api/blobs {data, sessionId}` → `{ blobHashes }` ; `POST /api/sessions/{sessionId}/messages {blobHash}` → `{ jobId, txHash }`
+6. `GET /api/sessions/{sessionId}/token` → relay token → WebSocket `wss://relay…/ws?token=…` → decrypt `chunk` frames until `complete`
+
+**Encryption:** AES-GCM session key, wrapped to each recipient with ECDH-P-256
+(`encryptSessionKey`); prompt and answer are AES-GCM under the session key end-to-end.
+
+**Whitelisted models (modelId = keccak256 of the exact Ollama tag), testnet fees:**
+`glm-4.7-flash` (0.02) · `gpt-oss:20b` (0.04) · `gpt-oss:120b` (0.2) · `qwen3-vl:8b` (0.02) ·
+`qwen3-vl:30b` (0.08) · `qwen3-embedding:0.6b` (0.005) · plus legacy `llama3-8b` (0.02) /
+`llama3-70b` (0.15). Only models with a **live worker** appear in `GET /api/models`.
+
+**Reproduce the live run:** `e2e_final.mjs` (single prompt) does auth → sortition → gasless
+session → encrypted blob → relay stream → decrypt, printing the answer, tx hashes, and
+latency shown in Section 7.
+
+---
 
 *This guide will be updated as the network moves toward mainnet.*
