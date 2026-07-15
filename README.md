@@ -1,5 +1,8 @@
 # Expanding LightChain AI: Open Models Worth Adding
 
+**[Browse every model transcript (hosted viewer)](https://marinom2.github.io/lightchain-ai-research/)** - reasoning, coding, and LightChain assessment (brief-fed vs web-researched), every prompt + full answer.
+
+
 Community research on which open AI models LightChain AI should add to its worker network. Hardware fit and speed are **measured on real rented GPUs**, and the on-chain facts are **verified against the live network**.
 
 LightChain AI is a network of people running open AI models on their own GPUs (via Ollama) and getting paid in LCAI. Today the network serves two models (`llama3-8b`, `llama3-70b`). This research recommends 10 more, sorted by how hard each is to add, and backs every hardware and latency claim with a real measurement.
