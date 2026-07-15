@@ -1,5 +1,7 @@
 # Expanding LightChain AI: Open Models Worth Adding
 
+**[Best open model for real work](best-model-for-real-work-2026-07.md)** - the definitive head-to-head (reasoning + coding + web research), with the [hosted viewer](https://marinom2.github.io/lightchain-ai-research/).
+
 **[Browse every model transcript (hosted viewer)](https://marinom2.github.io/lightchain-ai-research/)** - reasoning, coding, and LightChain assessment (brief-fed vs web-researched), every prompt + full answer.
 
 
