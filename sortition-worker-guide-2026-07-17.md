@@ -172,6 +172,8 @@ advertise list at all; only the chat UI's model picker does.
 
 ## Test it yourself in 2 minutes (no frontend, no worker needed)
 
+> Newbie-friendly step-by-step version with troubleshooting: [how-to-test-the-new-models.md](how-to-test-the-new-models.md)
+
 A ready-to-run consumer script lives in this repo: [consumer-e2e-test.mjs](consumer-e2e-test.mjs).
 It performs the exact flow above (SIWE login, sortition, gasless session, encrypted prompt,
 wait for completeJob, fetch + verify + decrypt the response blob) and prints the answer with
