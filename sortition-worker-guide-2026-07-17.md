@@ -124,17 +124,44 @@ Startup order: redis-server, then Ollama (pull your models + the llama3-8b alias
 
 Worker `0x481A847A71d131C707C20F38d9F30C8082409Baa` (5,000 LCAI staked, one A100 80GB pod)
 registered all four whitelisted models and served a real consumer job on each. Sortition
-selected this worker every time; every answer below was decrypted from the on-chain response
-blob after verifying its keccak against the on-chain `responseCiphertextHash`.
+selected this worker every time; every answer was decrypted from the on-chain response blob
+after verifying its keccak against the on-chain `responseCiphertextHash`. Consumer wallet:
+`0x52582C175c9330808E474D672638232758F3b860`. Every hash below is complete; prefix with
+`https://testnet.lightscan.app/tx/` to open it.
 
-| Model | jobId | Sortition | Total | Session tx | submitJob tx |
-|---|---|---|---|---|---|
-| gpt-oss:20b | 1218 | 22.4s | 75.9s | `0x73f4c6599f73...28fdab4` | `0xf766c08b765f...e93d18b` |
-| gpt-oss:120b | 1219 | 36.5s | 92.3s | `0x52830b2e824c...1543a657` | `0x3e38bbb6d325...ca85bd9f` |
-| glm-4.7-flash | 1220 | 32.5s | 82.8s | `0x2b19324f2562...76dec22d` | `0x0b8072975255...971d9069` |
-| llama3-8b | 1221 | 26.5s | 71.6s | `0xd0769d95d21b...c8f7eb99` | `0x34af26fe479a...5f82bb555` |
+**gpt-oss:20b, jobId 1218 (sortition 22.4s, total 75.9s)**
+- session created (gasless delegate): `0x73f4c6599f738d861c9083a7f9672c4b59bd2bc7bbd49cc4cfb2d03a728fdab4`
+- submitJob (gasless): `0xf766c08b765fe21f20767451f982d1ec160086f6a97bc815f13106123e93d18b`
+- worker claimSession: `0x82f9611400bf5ea4c3e3d78f986fd10947008698f3111b2bc93a14a42a14b718`
+- worker acknowledgeJob: `0xa5bd37c9e70b13e81be5676673743c9ae51839e28a53fcfaa47bd2da28d4244f`
+- worker response blob (EIP-4844): `0xce7611722fc02fbec04468b13e2e11dcc1002c6bf34f6a75879b5b820648fea1`
+- worker completeJob: `0xf0bf2438d9357ca33a4efe78531f2936b24823662517100a91321dd1f3074406`
 
-All on `https://testnet.lightscan.app/tx/<hash>`. Answers, for flavor: gpt-oss:20b introduced
+**gpt-oss:120b, jobId 1219 (sortition 36.5s, total 92.3s)**
+- session created: `0x52830b2e824ca804f6a88aa3140dc31846dc5992a10fa0ef0beab3f01543a657`
+- submitJob: `0x3e38bbb6d32509ec0901c7e5071c5d86339b5ff2c950cb498f83d947ca85bd9f`
+- worker claimSession: `0x1c93a9bdcfd98a41c45170221a26abff09570122110f7b5b6e2de1a9cebd9c73`
+- worker acknowledgeJob: `0xaeccae71639e97155feea45a88c6869c2f7a44c9f0add438902fc612a85afebf`
+- worker response blob: `0x27f6829f68c6a3e643747d3db0f0ce9b7e6e439620ef6828fa7648f05b3d2b34`
+- worker completeJob: `0xf6b6a1820d81c42d71666778f841e71fa1370716b07d1647f41ff93c4f29b7a8`
+
+**glm-4.7-flash, jobId 1220 (sortition 32.5s, total 82.8s)**
+- session created: `0x2b19324f25621a781c0c8ccb7b0d345126b936a8d0cb07556f188ac276dec22d`
+- submitJob: `0x0b80729752d50b469df84da5d273ba34d292e9dd24da6e5b75df8835971d9069`
+- worker claimSession: `0x5a3e5b66f4fb1172bcfc46571c66b29bc2ffa3f26c25ebf0f190711be6b36c3b`
+- worker acknowledgeJob: `0x8a9e27befb64dbe667d3104d86a5de305d5745fe8b595a4043c0726b02d5512e`
+- worker response blob: `0xc9e5ce914187797fe6483c6396b0470b0c12f7e3bbbdc7ac46a9d3f874c962f9`
+- worker completeJob: `0x99f14448c9cb7b3ed61d2f35b1304d09a110a378eb479667530656c0d910e548`
+
+**llama3-8b, jobId 1221 (sortition 26.5s, total 71.6s)**
+- session created: `0xd0769d95d21b032f78d1d997b79047555ccd6185829bdc9f29d8f6e9c8f7eb99`
+- submitJob: `0x34af26fe479a54c8235569e9417ff4860bb2fa12d909634f2de4e435f82bb555`
+- worker claimSession: `0x30b0993709220e3a4dba34f5f68e408add56059a16911c6e9b66f07a7356765e`
+- worker acknowledgeJob: `0x680a10bab8c8e0674a6bd5e26abbee2243adab8e689967a188fee86548b9f421`
+- worker response blob: `0x1458d638fa3d7f75b6858765c1e260895925ac42becff200154a2a906ca1cfa6`
+- worker completeJob: `0x88b4383c082d3609884b9a2b0ac226b9c965a1224377f3f6b9a5a3265740e8af`
+
+Answers, for flavor: gpt-oss:20b introduced
 itself as "ChatGPT, built on OpenAI's GPT-4 architecture"; glm-4.7-flash as "a large language
 model developed by Z.ai"; llama3-8b called itself "a variant of the BERT architecture", which is
 wrong, and a fitting one-line summary of why the network wants the newer models.
