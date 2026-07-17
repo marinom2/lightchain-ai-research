@@ -170,6 +170,30 @@ Notable: **the consumer gateway's `/api/models` still lists only llama3-8b, yet 
 worked.** Sortition checks eligibility on-chain, so the protocol path does not depend on the
 advertise list at all; only the chat UI's model picker does.
 
+## Test it yourself in 2 minutes (no frontend, no worker needed)
+
+A ready-to-run consumer script lives in this repo: [consumer-e2e-test.mjs](consumer-e2e-test.mjs).
+It performs the exact flow above (SIWE login, sortition, gasless session, encrypted prompt,
+wait for completeJob, fetch + verify + decrypt the response blob) and prints the answer with
+the tx links.
+
+```bash
+git clone https://github.com/marinom2/lightchain-ai-research
+cd lightchain-ai-research
+npm install ethers@6 lightnode-sdk
+
+# first-time wallet only: prepay 3 LCAI + authorize the gateway delegate (one tx)
+PRIVATE_KEY=0x<yourTestnetKey> SETUP=1 node consumer-e2e-test.mjs
+
+# then test any whitelisted model (needs a live worker for it):
+PRIVATE_KEY=0x<yourTestnetKey> MODEL="gpt-oss:20b" PROMPT="hello, which model are you?" node consumer-e2e-test.mjs
+```
+
+Notes: the wallet needs a little testnet LCAI (the per-job fee is 0.02 to 0.2 LCAI, drawn from
+the prepaid balance; jobs themselves are gasless). If you already use the testnet chat with the
+same wallet, you are already authorized and funded - skip SETUP. `MODEL` accepts the tag
+(`gpt-oss:20b`, `gpt-oss:120b`, `glm-4.7-flash`, `llama3-8b`) or a raw `0x` modelId.
+
 ## The ask: the whitelisted models are proven, let's surface them to users
 
 The hard part is already done. The team whitelisted gpt-oss:20b, gpt-oss:120b and glm-4.7-flash
