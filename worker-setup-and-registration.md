@@ -1,5 +1,11 @@
 # Running a LightChain AI Worker: Setup, Registration, and Serving the Models
 
+> **UPDATE 2026-07-17: worker JOB-SELECTION changed on 2026-07-14 (dispatcher removed, on-chain sortition).**
+> Registration/staking below is unchanged, but to actually RECEIVE jobs you must follow
+> [sortition-worker-guide-2026-07-17.md](sortition-worker-guide-2026-07-17.md): the 07-14 worker image,
+> SORTITION_ENABLED=true + SESSION_MANAGER_ADDRESS, and a local redis. Without those a registered worker never gets a job.
+
+
 *A step-by-step operator guide for LightChain **testnet** (chain 8200), written from a working
 setup. It covers standing up a worker, registering it on-chain with a stake, adding the
 whitelisted models, running the daemon, verifying it's live, and rotating keys. Every command

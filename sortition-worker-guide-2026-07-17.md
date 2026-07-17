@@ -76,10 +76,49 @@ protocol's own stated source of truth:
 4. Verify `keccak256(ciphertext) == getJob().responseCiphertextHash`, then AES-GCM-decrypt with
    the session key.
 
-Everything else from the pre-upgrade guide is unchanged: stake 5,000 LCAI via `register`,
+Everything else from the pre-upgrade guide
+([worker-setup-and-registration.md](worker-setup-and-registration.md): prerequisites, staking,
+key import, keygen, register, model tags) is unchanged: stake 5,000 LCAI via `register`,
 `keccak256(exact-tag)` model ids, the `llama3-8b` vs `llama3:8b` Ollama alias
 (`ollama cp llama3:8b llama3-8b`), keygen + on-chain key binding (rotate only via
 deregister + re-register).
+
+### Complete worker environment (testnet, copy-paste)
+
+```bash
+# network
+NETWORK=testnet
+RPC_URL=https://rpc.testnet.lightchain.ai
+CHAIN_ID=8200
+BEACON_API_URL=https://beacon.testnet.lightchain.ai
+# contracts (public, same for every operator)
+WORKER_REGISTRY_ADDRESS=0x0000000000000000000000000000000000001002
+AI_CONFIG_ADDRESS=0xeCF4Ca5Ba6D97ae586993e170764a1E92231b67e
+JOB_REGISTRY_ADDRESS=0x531b3a87c5d785441b9cf55b98169f20fd9056a7
+# NEW: the on-chain lottery. This is the public SessionManager contract every worker watches
+# and sends claimSession() to. Not a secret; verify it on the explorer.
+SORTITION_ENABLED=true
+SESSION_MANAGER_ADDRESS=0x86AdA80864e87dE2275200FeE905b5C32b32Bf68
+SORTITION_STATE_DIR=/data/sortition
+# runtime
+OLLAMA_URL=http://localhost:11434
+BLOB_MODE=beacon
+KEYS_DIR=/data
+SUPPORTED_MODELS=gpt-oss:120b,gpt-oss:20b,glm-4.7-flash,llama3-8b   # what YOUR card can serve
+WORKER_KEYSTORE_PATH=/data/eth-keystore/<your-keystore-file>
+WORKER_KEYSTORE_PASSWORD=<your-password>
+ENCRYPTION_KEYSTORE_PATH=/data/worker-encryption.key
+SESSION_KEY_FILE=/data/session-keys.enc
+# optional: web search + metrics
+SEARCH_ENABLED=true
+TAVILY_API_KEY=<yours>
+WORKER_METRICS_ADDR=0.0.0.0:9101
+```
+
+Startup order: redis-server, then Ollama (pull your models + the llama3-8b alias), then
+`lightchain-worker register` once, then the `worker` daemon. Success looks like
+`worker sidecar running (sortition mode)` in the log, followed by
+`claimed session request` lines once traffic arrives.
 
 ## The proof: four models, one worker, all on-chain (2026-07-17)
 
