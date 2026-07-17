@@ -170,18 +170,23 @@ Notable: **the consumer gateway's `/api/models` still lists only llama3-8b, yet 
 worked.** Sortition checks eligibility on-chain, so the protocol path does not depend on the
 advertise list at all; only the chat UI's model picker does.
 
-## Open items for the team
+## The ask: the whitelisted models are proven, let's surface them to users
 
-1. **Relay streaming from external workers.** Chunks go to the worker's local Redis; the public
-   relay never sees them, so browser users get no token stream from external workers (the answer
-   still lands on-chain). Either give workers a publishable stream endpoint or make the frontend
-   fall back to blob reads.
-2. **`/api/models` advertise gap.** Whitelisted models with a live eligible worker still are not
-   listed, which keeps them invisible in the chat picker even though the protocol serves them.
-3. **Indexer stale state on fast deregister + re-register.** The workers dashboard showed this
-   worker as "Deregistered" after a 17-second dereg/re-reg cycle even though it was registered
-   on-chain; the second event was never reconciled.
-4. **Announcement vs published artifacts.** The 07-14 announcement described the upgrade as
-   pending re-audit while the contracts were already live on testnet and the matching worker
-   image was published quietly; operators had ~3 days of a registry whose `latest` could not
-   serve the live chain.
+The hard part is already done. The team whitelisted gpt-oss:20b, gpt-oss:120b and glm-4.7-flash
+on-chain, the sortition upgrade routes jobs to whichever worker serves them, and the runs above
+show all of it working end to end today, with a live staked worker ready to keep serving them.
+What remains is small and purely on the surfacing side:
+
+1. **List worker-backed models in `/api/models`.** Eligibility is already on-chain
+   (`isEligible`); reflecting it in the models endpoint makes gpt-oss and glm appear in the chat
+   picker automatically, with no contract or protocol change. This single step turns the proven
+   protocol capability into a user-visible feature.
+2. **Read answers from the response blob in the chat frontend** (fallback when no stream
+   arrives). External workers' stream chunks stay on their local Redis, but every answer already
+   lands on-chain within seconds; a blob-read fallback gives browser users the full answer from
+   any worker, exactly per the design's "chain and blobs are the source of truth."
+3. *(Minor)* Reconcile fast deregister + re-register cycles in the workers dashboard so a
+   re-registered worker shows as registered again.
+
+With 1 and 2, users get a real model choice in the chat (including the far stronger gpt-oss
+models) backed by capacity any external operator can add by following this guide.
